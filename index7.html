@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crosby VW QR Studio - Advanced</title>
+    
+    <script type="text/javascript" src="https://unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
+    
+    <style>
+        /* Volkswagen Brand Styling */
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; padding: 40px; background-color: #f4f6f9; color: #001e50; }
+        .header { margin-bottom: 30px; }
+        .header h1 { margin: 0; font-size: 28px; }
+        
+        .controls { background: white; padding: 25px; border-radius: 8px; box-shadow: 0 8px 16px rgba(0,30,80,0.1); max-width: 550px; margin: 0 auto 20px auto; border-top: 5px solid #00b0f0; }
+        .input-group { margin-bottom: 15px; text-align: left; }
+        label { display: block; font-weight: bold; margin-bottom: 5px; color: #001e50; font-size: 13px;}
+        
+        input[type="text"], input[type="url"], select, input[type="file"] { width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; }
+        input[type="color"] { width: 100%; height: 35px; border: 1px solid #ccc; border-radius: 4px; cursor: pointer; padding: 2px; }
+
+        /* Advanced Panel Styling */
+        #advancedPanel { display: none; margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee; text-align: left; }
+        .advanced-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .advanced-title { grid-column: span 2; font-size: 14px; font-weight: bold; color: #00b0f0; margin-bottom: 5px; text-transform: uppercase; border-bottom: 1px solid #f0f0f0; padding-bottom: 5px;}
+
+        .button-group { display: flex; gap: 10px; margin-top: 25px; }
+        button { border: none; padding: 12px 20px; font-size: 15px; border-radius: 4px; cursor: pointer; width: 100%; font-weight: bold; transition: background 0.2s; }
+        .btn-primary { background-color: #001e50; color: white; }
+        .btn-success { background-color: #00b0f0; color: white; }
+        .btn-outline { background-color: transparent; border: 1px solid #001e50; color: #001e50; }
+        .btn-outline:hover { background-color: #f0f4f8; }
+        
+        #canvas { display: flex; justify-content: center; margin-top: 30px; }
+        #canvas svg { box-shadow: 0 4px 12px rgba(0,0,0,0.1); border-radius: 8px; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>Crosby VW QR Studio</h1>
+    </div>
+    
+    <div class="controls">
+        <!-- Core Controls -->
+        <div class="input-group">
+            <label>Target URL:</label>
+            <input type="url" id="urlInput" value="https://www.crosbyvw.com" oninput="generateCustomQR()">
+        </div>
+
+        <div class="input-group">
+            <label>Color Theme Preset:</label>
+            <select id="styleSelect" onchange="applyTheme()">
+                <option value="vw-classic">VW Classic Blue</option>
+                <option value="r-line">R-Line Dark Mode</option>
+                <option value="gti-sport">GTI Sport Red</option>
+                <option value="minimalist">Standard Minimalist</option>
+                <option value="custom">-- Custom Style --</option>
+            </select>
+        </div>
+
+        <button class="btn-outline" onclick="toggleAdvanced()">⚙️ Advanced Controls</button>
+
+        <!-- HIDDEN ADVANCED PANEL -->
+        <div id="advancedPanel">
+            <div class="advanced-grid">
+                <div class="advanced-title">Main Body</div>
+                <div class="input-group">
+                    <label>Dot Type:</label>
+                    <select id="dotType" onchange="manualChange()">
+                        <option value="dots">Dots</option>
+                        <option value="rounded">Rounded</option>
+                        <option value="classy">Classy</option>
+                        <option value="classy-rounded">Classy Rounded</option>
+                        <option value="square">Square</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Main Color:</label>
+                    <input type="color" id="dotColor" onchange="manualChange()">
+                </div>
+
+                <div class="advanced-title">Corner Frame (Square)</div>
+                <div class="input-group">
+                    <label>Frame Shape:</label>
+                    <select id="cornerSquareType" onchange="manualChange()">
+                        <option value="extra-rounded">Smooth Rounded</option>
+                        <option value="dot">Circular</option>
+                        <option value="square">Sharp Square</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Frame Color:</label>
+                    <input type="color" id="cornerSquareColor" onchange="manualChange()">
+                </div>
+
+                <div class="advanced-title">Corner Eye (Dot)</div>
+                <div class="input-group">
+                    <label>Eye Shape:</label>
+                    <select id="cornerDotType" onchange="manualChange()">
+                        <option value="dot">Circular</option>
+                        <option value="square">Sharp Square</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Eye Color:</label>
+                    <input type="color" id="cornerDotColor" onchange="manualChange()">
+                </div>
+
+                <div class="advanced-title">Global</div>
+                <div class="input-group">
+                    <label>Background:</label>
+                    <input type="color" id="bgColor" value="#ffffff" onchange="manualChange()">
+                </div>
+                <div class="input-group">
+                    <label>Error Level:</label>
+                    <select id="errorLevel" onchange="manualChange()">
+                        <option value="H">High (Safest for Logos)</option>
+                        <option value="Q">Quartile</option>
+                        <option value="M">Medium</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="input-group" style="margin-top: 15px;">
+            <label>Upload Center Logo:</label>
+            <input type="file" id="logoInput" accept="image/*">
+        </div>
+
+        <div class="button-group">
+            <button class="btn-primary" onclick="generateCustomQR()">Refresh QR Code</button>
+            <button class="btn-success" onclick="downloadQR()">Download High-Res SVG</button>
+        </div>
+    </div>
+
+    <div id="canvas"></div>
+
+    <script>
+        let qrCode = null;
+        let uploadedLogoData = null; 
+
+        // Toggle the Advanced Panel
+        function toggleAdvanced() {
+            const panel = document.getElementById("advancedPanel");
+            panel.style.display = (panel.style.display === "block") ? "none" : "block";
+        }
+
+        // Apply a theme and update the Advanced UI pickers to match
+        function applyTheme() {
+            const theme = document.getElementById("styleSelect").value;
+            if (theme === "custom") return;
+
+            const configs = {
+                "vw-classic": { dot: "dots", dotClr: "#001e50", cSq: "extra-rounded", cSqClr: "#001e50", cDt: "dot", cDtClr: "#00b0f0", bg: "#ffffff" },
+                "r-line": { dot: "rounded", dotClr: "#111111", cSq: "extra-rounded", cSqClr: "#111111", cDt: "square", cDtClr: "#001e50", bg: "#f0f4f8" },
+                "gti-sport": { dot: "classy-rounded", dotClr: "#000000", cSq: "extra-rounded", cSqClr: "#e32636", cDt: "dot", cDtClr: "#000000", bg: "#ffffff" },
+                "minimalist": { dot: "square", dotClr: "#000000", cSq: "square", cSqClr: "#000000", cDt: "square", cDtClr: "#000000", bg: "#ffffff" }
+            };
+
+            const c = configs[theme];
+            document.getElementById("dotType").value = c.dot;
+            document.getElementById("dotColor").value = c.dotClr;
+            document.getElementById("cornerSquareType").value = c.cSq;
+            document.getElementById("cornerSquareColor").value = c.cSqClr;
+            document.getElementById("cornerDotType").value = c.cDt;
+            document.getElementById("cornerDotColor").value = c.cDtClr;
+            document.getElementById("bgColor").value = c.bg;
+
+            generateCustomQR();
+        }
+
+        function manualChange() {
+            document.getElementById("styleSelect").value = "custom";
+            generateCustomQR();
+        }
+
+        // Logo Listener
+        document.getElementById('logoInput').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => { uploadedLogoData = e.target.result; generateCustomQR(); };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        function generateCustomQR() {
+            const url = document.getElementById("urlInput").value;
+            if (!url) return;
+
+            document.getElementById("canvas").innerHTML = "";
+
+            qrCode = new QRCodeStyling({
+                width: 300,
+                height: 300,
+                type: "svg",
+                data: url,
+                image: uploadedLogoData,
+                qrOptions: { errorCorrectionLevel: document.getElementById("errorLevel").value },
+                dotsOptions: { color: document.getElementById("dotColor").value, type: document.getElementById("dotType").value },
+                backgroundOptions: { color: document.getElementById("bgColor").value },
+                cornersSquareOptions: { color: document.getElementById("cornerSquareColor").value, type: document.getElementById("cornerSquareType").value },
+                cornersDotOptions: { color: document.getElementById("cornerDotColor").value, type: document.getElementById("cornerDotType").value },
+                imageOptions: { crossOrigin: "anonymous", margin: 15, imageSize: 0.4 }
+            });
+
+            qrCode.append(document.getElementById("canvas"));
+        }
+
+        function downloadQR() {
+            if (qrCode) qrCode.download({ name: "crosbyvw-custom-qr", extension: "svg" });
+        }
+
+        window.onload = applyTheme;
+    </script>
+
+</body>
+</html>
