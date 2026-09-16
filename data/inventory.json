@@ -1,0 +1,29 @@
+{
+  "fetchedAt": "2026-09-16T19:05:10.498Z",
+  "listingUrl": "https://www.crosbyvw.com/vehicles/?sc=used&in_transit=true&in_stock=true&on_order=true&view=grid",
+  "pagesFetched": [
+    "https://www.crosbyvw.com/vehicles/?sc=used&in_transit=true&in_stock=true&on_order=true&view=grid"
+  ],
+  "strategies": {
+    "json-ld": 0,
+    "embedded-json": 0,
+    "dom": 0
+  },
+  "config": {
+    "dealerName": "Crosby Volkswagen",
+    "listingUrl": "https://www.crosbyvw.com/vehicles/?sc=used&in_transit=true&in_stock=true&on_order=true&view=grid",
+    "qrTracking": {
+      "utm_source": "window_sticker",
+      "utm_medium": "qr",
+      "utm_campaign": "used_inventory"
+    }
+  },
+  "counts": {
+    "found": 0,
+    "printable": 0,
+    "incomplete": 0,
+    "newThisRun": 0
+  },
+  "vehicles": [],
+  "incomplete": []
+}
