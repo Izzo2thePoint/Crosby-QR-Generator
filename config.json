@@ -1,0 +1,16 @@
+{
+  "dealerName": "Crosby Volkswagen",
+  "listingUrl": "https://www.crosbyvw.com/vehicles/?sc=used&in_transit=true&in_stock=true&on_order=true&view=grid",
+  "maxPages": 25,
+  "requestDelayMs": 700,
+  "requestTimeoutMs": 25000,
+  "enrichFromVdp": true,
+  "maxVdpFetches": 60,
+  "port": 4321,
+  "openBrowser": true,
+  "qrTracking": {
+    "utm_source": "window_sticker",
+    "utm_medium": "qr",
+    "utm_campaign": "used_inventory"
+  }
+}

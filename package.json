@@ -1,0 +1,13 @@
+{
+  "name": "crosby-label-studio",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Finds newly listed pre-owned vehicles on crosbyvw.com and prints 2.5x3.5 QR window labels for them.",
+  "type": "module",
+  "engines": { "node": ">=18" },
+  "scripts": {
+    "start": "node tools/serve.mjs",
+    "scrape": "node tools/scrape.mjs",
+    "test": "node tools/selftest.mjs"
+  }
+}
