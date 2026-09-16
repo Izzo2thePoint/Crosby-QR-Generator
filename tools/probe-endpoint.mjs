@@ -1,66 +1,73 @@
 #!/usr/bin/env node
-// ajax-vehicles.php is a proxy: ?endpoint=<encoded upstream query>&action=vms_data.
-// This reconstructs how the SRP builds that endpoint string, then calls it.
+// Builds the vehicles request exactly the way the SRP bundle does:
+//   endpoint = vmsApiUrl + "filtering/?cp=<inventoryId>&ln=<lang>&" + filters
+//   GET <pluginsUrl>/convertus-vms/include/php/ajax-vehicles.php?endpoint=<encoded>&action=vms_data
 
 import { fetchHtml } from './lib/fetcher.mjs';
 import { loadConfig } from './scrape.mjs';
 
 const listingUrl = process.argv[2] || loadConfig().listingUrl;
-const origin = new URL(listingUrl).origin;
-const SRP_BUNDLE = '/wp-content/plugins/convertus-vms/include/srp/convertus-v4/main.convertus.min.js';
-const AJAX = '/wp-content/plugins/convertus-vms/include/php/ajax-vehicles.php';
 const show = (label, value) => console.log(String(label).padEnd(22) + ': ' + value);
 
 const { html } = await fetchHtml(listingUrl, { timeoutMs: 30000 });
 
-console.log('=== globalVars in the page ===');
-const gvMatch = /globalVars\s*=\s*\{/.exec(html);
-if (gvMatch) {
-  const start = html.indexOf('{', gvMatch.index);
+function readGlobalVars(page) {
+  const match = /globalVars\s*=\s*\{/.exec(page);
+  if (!match) return null;
+  const start = page.indexOf('{', match.index);
   let depth = 0;
-  let end = start;
-  for (let i = start; i < html.length && i < start + 200000; i += 1) {
-    if (html[i] === '{') depth += 1;
-    else if (html[i] === '}') { depth -= 1; if (depth === 0) { end = i + 1; break; } }
-  }
-  const blob = html.slice(start, end);
-  show('bytes', blob.length);
-  try {
-    const parsed = JSON.parse(blob);
-    for (const [key, value] of Object.entries(parsed)) {
-      const printable = typeof value === 'object' ? JSON.stringify(value).slice(0, 120) : String(value).slice(0, 120);
-      console.log('  ' + key.padEnd(28) + ' = ' + printable);
+  for (let i = start; i < page.length; i += 1) {
+    if (page[i] === '{') depth += 1;
+    else if (page[i] === '}') {
+      depth -= 1;
+      if (depth === 0) {
+        try { return JSON.parse(page.slice(start, i + 1)); } catch { return null; }
+      }
     }
-  } catch {
-    console.log(blob.slice(0, 4000));
   }
-} else {
-  console.log('  (no globalVars assignment found)');
+  return null;
 }
 
-console.log('\n=== how the SRP builds the endpoint string ===');
-const { html: bundle } = await fetchHtml(origin + SRP_BUNDLE, { timeoutMs: 30000 });
-show('bundle bytes', bundle.length);
+const gv = readGlobalVars(html);
+if (!gv) { console.log('Could not read globalVars'); process.exit(1); }
 
-const hit = bundle.indexOf('ajax-vehicles');
-if (hit !== -1) {
-  console.log('\n-- 7000 characters leading up to the request --');
-  console.log(bundle.slice(Math.max(0, hit - 7000), hit + 400));
+console.log('=== the settings the request needs ===');
+for (const key of ['vmsApiUrl', 'inventoryId', 'language', 'useSearchModel', 'advancedPricing',
+  'hideZeroPriceVehicles', 'inventoryTags', 'inventoryTagsMethod', 'inventoryTagsSaleClass',
+  'pluginsUrl', 'siteUrl', 'srpThemeVersion']) {
+  show('  ' + key, JSON.stringify(gv[key]));
 }
 
-console.log('\n-- globalVars keys the bundle reads --');
-const gvKeys = [...new Set([...bundle.matchAll(/globalVars\.([A-Za-z0-9_]+)/g)].map((m) => m[1]))];
-console.log('  ' + gvKeys.join(', '));
+function buildEndpoint(params) {
+  let endpoint = gv.vmsApiUrl + 'filtering/?cp=' + gv.inventoryId;
+  endpoint += gv.useSearchModel ? '&sf=true' : '';
+  endpoint += '&ln=' + (gv.language || 'en') + '&';
+  endpoint += Object.entries(params)
+    .map(([key, value]) => encodeURIComponent(key) + '=' + encodeURIComponent(value).replace(/%25/g, '%'))
+    .join('&');
+  if (String(gv.hideZeroPriceVehicles) === 'true') endpoint += '&hzpv=true';
+  if (gv.inventoryTags && !('tg' in params)) {
+    endpoint += '&tg=' + gv.inventoryTags + '&tgm=' + gv.inventoryTagsMethod + '&tgsc=' + gv.inventoryTagsSaleClass;
+  }
+  return endpoint;
+}
 
-// Try the proxy the way the page calls it, with a few plausible upstream queries.
-const search = new URL(listingUrl).search.replace(/^\?/, '');
-const candidates = [search, 'sc=used', search + '&pn=1&ipp=24', 'sc=used&pn=1&ipp=24'];
+const proxy = gv.pluginsUrl + '/convertus-vms/include/php/ajax-vehicles.php';
+const listingParams = Object.fromEntries(new URL(listingUrl).searchParams);
+delete listingParams.view;
 
-for (const candidate of candidates) {
-  const url = `${origin}${AJAX}?endpoint=${encodeURIComponent(candidate)}&action=vms_data`;
-  console.log('\n-- endpoint=' + candidate + ' --');
+const attempts = [
+  { label: 'listing filters as-is', params: listingParams },
+  { label: 'used only', params: { sc: 'used' } },
+  { label: 'used, page 1, 100 per page', params: { ...listingParams, pn: '1', ipp: '100' } }
+];
+
+for (const attempt of attempts) {
+  const endpoint = buildEndpoint(attempt.params);
+  console.log('\n-- ' + attempt.label + ' --');
+  console.log('  endpoint: ' + endpoint);
   try {
-    const response = await fetch(url, {
+    const response = await fetch(proxy + '?endpoint=' + encodeURIComponent(endpoint) + '&action=vms_data', {
       signal: AbortSignal.timeout(30000),
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
@@ -74,15 +81,17 @@ for (const candidate of candidates) {
     show('  bytes', body.length);
     let parsed = null;
     try { parsed = JSON.parse(body); } catch { /* not JSON */ }
-    if (!parsed) { console.log('  body: ' + body.slice(0, 300).replace(/\s+/g, ' ')); continue; }
+    if (!parsed) { console.log('  body: ' + body.slice(0, 400).replace(/\s+/g, ' ')); continue; }
     show('  top level', Array.isArray(parsed) ? 'array(' + parsed.length + ')' : Object.keys(parsed).join(', '));
-    const list = Array.isArray(parsed) ? parsed : parsed.vehicles || parsed.data || parsed.results || parsed.items || parsed.inventory;
-    if (Array.isArray(list) && list.length) {
-      show('  vehicles', list.length);
+
+    const list = [parsed.vehicles, parsed.data, parsed.results, parsed.items, parsed.inventory,
+      parsed.data && parsed.data.vehicles, Array.isArray(parsed) ? parsed : null].find(Array.isArray);
+    if (list && list.length) {
+      show('  vehicles returned', list.length);
       show('  record keys', Object.keys(list[0]).join(', '));
-      console.log('  sample: ' + JSON.stringify(list[0]).slice(0, 1500));
+      console.log('  sample record: ' + JSON.stringify(list[0]).slice(0, 2000));
     } else {
-      console.log('  payload: ' + JSON.stringify(parsed).slice(0, 700));
+      console.log('  payload: ' + JSON.stringify(parsed).slice(0, 1200));
     }
   } catch (error) {
     show('  failed', error.message);
