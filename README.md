@@ -163,7 +163,7 @@ truncates its answers the way the real one does — and walks the whole cycle: r
 
 | File | Purpose |
 |---|---|
-| `labels.html` | The Label Studio screen — published to Pages as `index.html` |
+| `index.html` | The Label Studio screen — the page you print from |
 | `.github/workflows/inventory.yml` | The scheduled check and publish |
 | `config.json` | Settings |
 | `tools/scrape.mjs` | Reads the inventory, decides what's new |

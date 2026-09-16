@@ -177,7 +177,7 @@ async function handleApi(req, res, url) {
 }
 
 function resolveStatic(pathname) {
-  if (pathname === '/' || pathname === '/index.html') return path.join(ROOT, 'labels.html');
+  if (pathname === '/' || pathname === '/index.html') return path.join(ROOT, 'index.html');
   const segments = pathname.split('/').filter(Boolean);
   if (!segments.length || !STATIC_DIRS.includes(segments[0])) return '';
   const candidate = path.join(ROOT, ...segments);

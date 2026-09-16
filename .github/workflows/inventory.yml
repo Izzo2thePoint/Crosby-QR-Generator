@@ -62,7 +62,7 @@ jobs:
       - name: Assemble the page
         run: |
           mkdir -p _site/data _site/tools/lib
-          cp labels.html _site/index.html
+          cp index.html _site/index.html
           cp -r vendor _site/vendor
           if [ -d assets ]; then cp -r assets _site/assets; fi
           cp tools/lib/*.mjs _site/tools/lib/
