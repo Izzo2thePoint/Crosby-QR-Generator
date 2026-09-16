@@ -202,12 +202,15 @@
 
         <div id="view-import" class="card pad" style="display:none">
           <p style="margin-top:0;color:var(--muted);font-size:14px;line-height:1.55">
-            Backup route, for when the automatic check can't read the website. On the inventory page press
-            <strong>Ctrl&nbsp;+&nbsp;U</strong> (View page source), then <strong>Ctrl&nbsp;+&nbsp;A</strong> and
-            <strong>Ctrl&nbsp;+&nbsp;C</strong>, and paste it below. Nothing leaves this browser.
+            Backup route, for when the automatic check can't reach the website. Open the inventory link below,
+            press <strong>Ctrl&nbsp;+&nbsp;A</strong> then <strong>Ctrl&nbsp;+&nbsp;C</strong> on the page of text
+            that appears, and paste it in. Nothing leaves this browser.
           </p>
-          <p style="font-size:13px;margin:0 0 10px"><a id="listingLink" href="#" target="_blank" rel="noopener">Open the used inventory page &rarr;</a></p>
-          <textarea id="pasteBox" rows="7" placeholder="Paste the page source here"
+          <p style="font-size:13px;margin:0 0 10px">
+            <a id="apiLink" href="#" target="_blank" rel="noopener" style="display:none">Open the live vehicle list &rarr;</a>
+            <a id="listingLink" href="#" target="_blank" rel="noopener" style="margin-left:14px">Open the inventory page &rarr;</a>
+          </p>
+          <textarea id="pasteBox" rows="7" placeholder="Paste the copied text here"
             style="width:100%;font-family:monospace;font-size:12px;padding:10px;border:1px solid var(--line);border-radius:4px"></textarea>
           <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;align-items:center">
             <button class="btn-primary" onclick="importFromSource()">Read vehicles from this page</button>
@@ -450,6 +453,7 @@ async function staticPayload(inventory) {
   return {
     dealerName: config.dealerName || 'Crosby Volkswagen',
     listingUrl: config.listingUrl || inventory.listingUrl || '',
+    apiUrl: config.apiUrl || inventory.apiUrl || '',
     qrTracking: config.qrTracking || {},
     logos,
     fetchedAt: inventory.fetchedAt || null,
@@ -525,6 +529,10 @@ async function afterStateLoad() {
   $('tab-import').style.display = MODE === 'static' ? '' : 'none';
   $('clearHistoryBtn').style.display = MODE === 'static' ? '' : 'none';
   $('listingLink').href = APP.listingUrl || 'https://www.crosbyvw.com/vehicles/';
+  if (APP.apiUrl) {
+    $('apiLink').href = APP.apiUrl;
+    $('apiLink').style.display = '';
+  }
 
   const hasLogos = Boolean(APP.logos && APP.logos.header && APP.logos.icon);
   $('setupScreen').style.display = hasLogos ? 'none' : 'block';
@@ -1019,28 +1027,30 @@ async function importFromSource() {
   if (html.length < 200) { toast('Paste the page source into the box first', true); return; }
   $('importResult').textContent = 'Reading the page...';
 
-  let extractVehicles;
-  try {
-    ({ extractVehicles } = await import('./tools/lib/extract.mjs'));
-  } catch {
-    $('importResult').textContent = '';
-    toast('Could not load the page reader', true);
-    return;
-  }
-
   const base = APP.listingUrl || 'https://www.crosbyvw.com/vehicles/';
   let found = [];
+
+  // The inventory link gives JSON; a saved web page gives HTML. Accept either.
+  let asJson = null;
+  try { asJson = JSON.parse(html); } catch { asJson = null; }
+
   try {
-    found = extractVehicles(html, base).vehicles;
+    if (asJson && Array.isArray(asJson.results)) {
+      const { toVehicle } = await import('./tools/lib/convertus.mjs');
+      found = asJson.results.map(toVehicle);
+    } else {
+      const { extractVehicles } = await import('./tools/lib/extract.mjs');
+      found = extractVehicles(html, base).vehicles;
+    }
   } catch (error) {
     $('importResult').textContent = '';
-    toast('That did not look like a saved page: ' + error.message, true);
+    toast('Could not read that: ' + error.message, true);
     return;
   }
 
   const usable = found.filter((vehicle) => vehicle.key && vehicle.url && (vehicle.year || vehicle.model));
   if (!usable.length) {
-    $('importResult').textContent = 'No vehicles found in that page source.';
+    $('importResult').textContent = 'No vehicles found in what was pasted.';
     return;
   }
 

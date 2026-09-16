@@ -84,13 +84,26 @@ async function request(gv, filters, { listingUrl, timeoutMs }) {
   return payload;
 }
 
+// Real records carry these where a trim is unknown; they must not reach a label.
+const PLACEHOLDER_TRIM = /^(other\s*\/\s*don'?t\s*know|other|unspecified|unknown|not specified|n\/?a|none|-)$/i;
+
+/** Drops junk trims, and trims the model name already says ("Beetle Dune" + "Dune"). */
+function cleanTrim(value, model) {
+  const trim = String(value || '').trim();
+  if (!trim || PLACEHOLDER_TRIM.test(trim)) return '';
+  const lowerModel = String(model || '').trim().toLowerCase();
+  const lowerTrim = trim.toLowerCase();
+  if (lowerModel === lowerTrim || lowerModel.endsWith(' ' + lowerTrim)) return '';
+  return trim;
+}
+
 /** One API record -> the five fields a label needs, plus the extras worth showing. */
 export function toVehicle(record) {
   const year = record.year ? String(record.year) : '';
   const make = (record.make || '').trim();
   const model = (record.model || '').trim();
   // search_trim is the short form ("LX"); trim often repeats the body style ("Sedan LX").
-  const trim = (record.search_trim || record.trim || '').trim();
+  const trim = cleanTrim(record.search_trim, model) || cleanTrim(record.trim, model);
   const vehicle = {
     year,
     make,

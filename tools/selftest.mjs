@@ -327,6 +327,16 @@ async function main() {
     assert.ok(vehicle.url.includes('/vehicles/'), 'should carry the vehicle page link');
   });
 
+  check('keeps junk trims off the label', async () => {
+    const { toVehicle } = await import('./lib/convertus.mjs');
+    const make = (extra) => toVehicle({ make: 'Volkswagen', stock_number: 'X1', vdp_url: 'https://dealer.example/v/1', ...extra });
+    assert.equal(make({ model: 'Golf GTI', search_trim: "Other/Don't Know" }).trim, '', 'placeholder trim should be dropped');
+    assert.equal(make({ model: 'Beetle Dune', search_trim: 'Dune' }).trim, '', 'trim already in the model should be dropped');
+    assert.equal(make({ model: 'Taos', search_trim: 'Unspecified' }).trim, '');
+    assert.equal(make({ model: 'Forte Sedan', search_trim: 'LX', trim: 'Sedan LX' }).trim, 'LX', 'a real trim must survive');
+    assert.equal(make({ model: 'Tiguan', search_trim: '', trim: 'Comfortline' }).trim, 'Comfortline', 'falls back to the long trim');
+  });
+
   check('says so when the inventory system hands back less than it claims', async () => {
     const shortState = { ...convState, fleet: convState.fleet };
     assert.ok(shortState.fleet.length === 40);

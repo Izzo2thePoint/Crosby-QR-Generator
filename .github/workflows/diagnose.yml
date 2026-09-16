@@ -9,8 +9,6 @@ on:
         description: 'Inventory URL to inspect (blank = the one in config.json)'
         required: false
         default: ''
-  push:
-    branches: ['claude/**']
 
 jobs:
   diagnose:
