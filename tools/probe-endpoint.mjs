@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-// Sweep candidate paging parameters against the filtering endpoint and report
-// only the ones that actually change the result. 40 vehicles, 30 per response.
+// Two questions left: what does the grid put in its params object, and what
+// filter values can we slice the lot by?
 import { fetchHtml, sleep } from './lib/fetcher.mjs';
 import { loadConfig } from './scrape.mjs';
 
@@ -17,6 +17,7 @@ for (let i = gvStart; i < html.length; i += 1) {
 const gv = JSON.parse(html.slice(gvStart, gvEnd));
 const proxy = gv.pluginsUrl + '/convertus-vms/include/php/ajax-vehicles.php';
 const tags = '&hzpv=true&tg=' + gv.inventoryTags + '&tgm=' + gv.inventoryTagsMethod + '&tgsc=' + gv.inventoryTagsSaleClass;
+const filtering = (query) => `${gv.vmsApiUrl}filtering/?cp=${gv.inventoryId}&ln=en&${query}${tags}`;
 
 async function call(endpoint) {
   const response = await fetch(proxy + '?endpoint=' + encodeURIComponent(endpoint) + '&action=vms_data', {
@@ -30,56 +31,45 @@ async function call(endpoint) {
   try { return JSON.parse(text); } catch { return { raw: text.slice(0, 200) }; }
 }
 
-const filtering = (query) => `${gv.vmsApiUrl}filtering/?cp=${gv.inventoryId}&ln=en&${query}${tags}`;
-
 const base = await call(filtering('sc=used'));
-const baseStocks = (base.results || []).map((v) => v.stock_number);
-console.log('baseline: ' + baseStocks.length + ' of ' + (base.summary || {}).total_vehicles + ' vehicles, first=' + baseStocks[0]);
+const baseStocks = new Set((base.results || []).map((v) => v.stock_number));
+console.log('baseline: ' + baseStocks.size + ' of ' + (base.summary || {}).total_vehicles);
 
-// Does the inventory/ variant hand over everything at once?
-console.log('\n=== inventory/ endpoint ===');
-const inv = await call(`${gv.vmsApiUrl}inventory/${gv.inventoryId}/?ln=en&sc=used`);
-const invList = inv.results || inv.vehicles || (Array.isArray(inv) ? inv : null);
-console.log('  ' + (invList ? invList.length + ' vehicles' : JSON.stringify(inv).slice(0, 220)));
+console.log('\n=== all_filters ===');
+const all = base.all_filters || {};
+console.log('  keys: ' + Object.keys(all).join(', '));
+for (const key of ['yr', 'mk', 'md', 'bs', 'sc']) {
+  if (all[key]) console.log('  ' + key + ': ' + JSON.stringify(all[key]).slice(0, 400));
+}
 
-console.log('\n=== paging parameter sweep (only differences shown) ===');
-const pageNames = ['pg', 'pn', 'pp', 'ps', 'pi', 'pc', 'pgn', 'pge', 'sp', 'st', 'sk', 'of', 'os', 'ix',
-  'nr', 'np', 'rp', 'rs', 'li', 'lm', 'mx', 'ct', 'cn', 'vp', 'pa2', 'page_number', 'pageNum', 'pageIndex'];
-const sizeNames = ['ipp', 'rpp', 'vpp', 'ps', 'sz', 'nb', 'qt', 'mr', 'max_results', 'results_per_page', 'per_page', 'pageSize'];
+console.log('\n=== how the page talks about paging ===');
+for (const term of ['pagination', 'paging', 'loadMore', 'load-more', 'itemsPerPage', 'perPage', 'currentPage', '"pn"', 'pn:', '"pg"', 'pg:']) {
+  const index = html.indexOf(term);
+  if (index !== -1) console.log(`  ${term}: ...${html.slice(Math.max(0, index - 200), index + 200).replace(/\s+/g, ' ')}...`);
+}
 
-let found = [];
-for (const name of pageNames) {
-  const payload = await call(filtering(`sc=used&${name}=2`));
+const bundleUrl = gv.pluginsUrl + '/convertus-vms/include/srp/convertus-v4/main.convertus.min.js';
+const { html: bundle } = await fetchHtml(bundleUrl, { timeoutMs: 30000 });
+console.log('\n=== where the bundle builds vehicle-request params ===');
+let shown = 0;
+for (const match of bundle.matchAll(/["']sc["']\s*:/g)) {
+  if (shown >= 5) break;
+  console.log('  >>> ' + bundle.slice(Math.max(0, match.index - 400), match.index + 400).replace(/\s+/g, ' '));
+  console.log('');
+  shown += 1;
+}
+
+// Slice by make: the fallback that reaches every vehicle.
+console.log('\n=== make slices ===');
+const makes = (all.mk || []).map((entry) => entry.name || entry.value || entry).filter(Boolean);
+console.log('  makes: ' + makes.join(', '));
+const collected = new Set(baseStocks);
+for (const make of makes.slice(0, 20)) {
+  const payload = await call(filtering('sc=used&mk=' + encodeURIComponent(make)));
   const stocks = (payload.results || []).map((v) => v.stock_number);
-  if (stocks.length && stocks[0] !== baseStocks[0]) {
-    console.log(`  PAGE PARAM: ${name}=2 -> ${stocks.length} vehicles, first=${stocks[0]}`);
-    found.push(name);
-  }
+  const fresh = stocks.filter((stock) => !collected.has(stock));
+  fresh.forEach((stock) => collected.add(stock));
+  console.log(`  mk=${make}: ${stocks.length} returned (total ${(payload.summary || {}).total_vehicles}), ${fresh.length} new`);
   await sleep(120);
 }
-for (const name of sizeNames) {
-  const payload = await call(filtering(`sc=used&${name}=100`));
-  const stocks = (payload.results || []).map((v) => v.stock_number);
-  if (stocks.length > baseStocks.length) {
-    console.log(`  SIZE PARAM: ${name}=100 -> ${stocks.length} vehicles`);
-    found.push(name);
-  }
-  await sleep(120);
-}
-if (!found.length) console.log('  none of the candidates changed the response');
-
-// Slicing by year is the fallback: the summary block tells us which years exist.
-console.log('\n=== year slices (fallback route to the whole lot) ===');
-const years = (base.filters && base.filters.yr) || [];
-console.log('  years offered: ' + JSON.stringify(years).slice(0, 300));
-const seen = new Set(baseStocks);
-for (const entry of (Array.isArray(years) ? years : []).slice(0, 12)) {
-  const year = entry.name || entry.value || entry;
-  const payload = await call(filtering(`sc=used&yr=${encodeURIComponent(year)}`));
-  const stocks = (payload.results || []).map((v) => v.stock_number);
-  const fresh = stocks.filter((stock) => !seen.has(stock));
-  fresh.forEach((stock) => seen.add(stock));
-  console.log(`  yr=${year}: ${stocks.length} vehicles, ${fresh.length} not in page 1`);
-  await sleep(120);
-}
-console.log('  total distinct stock numbers gathered: ' + seen.size + ' of ' + (base.summary || {}).total_vehicles);
+console.log('\n  distinct stock numbers gathered: ' + collected.size + ' of ' + (base.summary || {}).total_vehicles);
