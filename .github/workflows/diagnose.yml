@@ -21,5 +21,5 @@ jobs:
         with:
           node-version: '20'
       - run: node tools/diagnose.mjs ${{ inputs.url }}
-      - run: node tools/diagnose-api.mjs ${{ inputs.url }}
+      - run: node tools/probe-endpoint.mjs ${{ inputs.url }}
         if: always()
