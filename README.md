@@ -66,21 +66,36 @@ QR prints solid. Chrome and Edge remember this after the first time.
 
 ---
 
-## When the automatic check can't read the site
+## How it reads the inventory
 
-Websites change and bot filters happen. The page tells you when its list is stale, and the
-**Paste from website** tab is the backup:
+The inventory page on crosbyvw.com is drawn in the browser: the HTML that arrives from the
+server contains the page furniture and none of the vehicles. So instead of reading the page,
+this asks the same place the website's own vehicle grid asks — the inventory system behind
+`crosbyvw.com`, through the site's own request path.
 
-1. Open the used inventory page in another tab.
-2. **Ctrl + U** (view source), then **Ctrl + A**, **Ctrl + C**.
+That means each vehicle arrives as a proper record: stock number, VIN, year, make, model, trim,
+odometer and the link to its page. Nothing is guessed from markup.
+
+The inventory system answers 30 vehicles at a time and ignores paging requests, so when the
+lot is larger the request is split along a facet it does report (make, then body style, year,
+colour) and the pieces are merged. The total is checked against the count the site itself
+reports — if even one vehicle is missing, the page says so rather than quietly showing a short
+list. If the inventory system is ever unreachable, it falls back to reading the page.
+
+### When the automatic check can't reach the site
+
+The page tells you when its list is stale, and the **Paste from website** tab is the backup:
+
+1. Click **Open the live vehicle list** in that tab.
+2. **Ctrl + A**, then **Ctrl + C** on the page of text that appears.
 3. Paste into the box → **Read vehicles from this page**.
 
-It reads the pasted page with the same logic as the automatic check, entirely inside your
-browser, and the vehicles land in the queue as normal.
+It reads what you pasted with the same logic as the automatic check, entirely inside your
+browser, and the vehicles land in the queue as normal. (It accepts a saved web page too, for
+other sites.)
 
-If that happens, it means the reader needs adjusting — the failed run saves a copy of what it
-received under `data/debug/` in the Actions logs. Send it along with a note and it's usually a
-quick fix.
+If the automatic check starts coming up empty, run **Actions → Diagnose inventory page** and
+send the output along — it reports exactly what the site is serving.
 
 ---
 
@@ -93,8 +108,11 @@ quick fix.
 }
 ```
 
-- `listingUrl` — the inventory page it reads. Drop `in_transit=true` to only get vehicles
-  physically on the lot, or paste any filtered inventory URL from the website.
+- `listingUrl` — the inventory page it reads, and the filters it inherits. Drop
+  `in_transit=true` to only get vehicles physically on the lot, or paste any filtered inventory
+  URL from the website — the same filters are passed to the inventory system.
+- `useInventoryApi` — set to `false` to force reading the page instead of the inventory
+  system. Only useful for troubleshooting.
 - `qrTracking` — parameters added to each QR link. `{}` for clean links.
 - `requestDelayMs` / `maxPages` — how gently it walks the site. The defaults are polite.
 
@@ -134,8 +152,9 @@ If a vehicle sells before you print it, it drops off the queue and the page says
 node tools/selftest.mjs
 ```
 
-Stands up a pretend dealer website and walks the whole cycle: scrape → new arrival → print →
-marked printed → vehicle sold. It also runs automatically on every pull request
+Stands up a pretend dealer website — including a stand-in for the inventory system that
+truncates its answers the way the real one does — and walks the whole cycle: read → new arrival
+→ print → marked printed → vehicle sold. It also runs automatically on every pull request
 (**Actions → Self-test**), so you don't need Node to see the result.
 
 ---
@@ -147,7 +166,9 @@ marked printed → vehicle sold. It also runs automatically on every pull reques
 | `labels.html` | The Label Studio screen — published to Pages as `index.html` |
 | `.github/workflows/inventory.yml` | The scheduled check and publish |
 | `config.json` | Settings |
-| `tools/scrape.mjs` | Reads the listing, decides what's new |
+| `tools/scrape.mjs` | Reads the inventory, decides what's new |
+| `tools/lib/convertus.mjs` | Talks to the inventory system behind the website |
+| `tools/diagnose.mjs` | Reports what the site is serving, when something breaks |
 | `tools/serve.mjs` | Local-PC mode only: runs the app, records what was printed |
 | `tools/lib/` | Page reading, vehicle matching, print history |
 | `tools/selftest.mjs` | End-to-end check |

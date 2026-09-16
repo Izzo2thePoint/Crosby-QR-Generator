@@ -1,0 +1,45 @@
+# Troubleshooting aid: reports what the inventory page serves and what the
+# scraper can read from it, from a runner that can reach the site.
+name: Diagnose inventory page
+
+on:
+  workflow_dispatch:
+    inputs:
+      url:
+        description: 'Inventory URL to inspect (blank = the one in config.json)'
+        required: false
+        default: ''
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: What the listing page contains
+        run: node tools/diagnose.mjs ${{ inputs.url }}
+      - name: What the scraper reads, end to end
+        if: always()
+        run: node tools/scrape.mjs
+      - name: The vehicles it produced
+        if: always()
+        run: |
+          node -e "
+            const inv = require('./data/inventory.json');
+            console.log('source     :', inv.source);
+            console.log('site total :', inv.apiTotal);
+            console.log('printable  :', inv.counts.printable, '| incomplete:', inv.counts.incomplete);
+            console.log('warning    :', inv.apiWarning || 'none');
+            console.log('');
+            for (const v of inv.vehicles.slice(0, 45)) {
+              console.log([
+                (v.stock || '-').padEnd(8),
+                [v.year, v.make, v.model].filter(Boolean).join(' ').padEnd(34),
+                (v.trim || '').padEnd(18),
+                (v.odometer ? Number(v.odometer).toLocaleString() + ' km' : '').padStart(12),
+                v.url ? 'link ok' : 'NO LINK'
+              ].join(' '));
+            }
+          "
