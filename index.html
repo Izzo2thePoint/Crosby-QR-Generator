@@ -130,6 +130,8 @@
     .print-page { page-break-after: always; break-after: page; }
     .print-page:last-child { page-break-after: auto; break-after: auto; }
     .qr-card { box-shadow: none !important; }
+    /* Nudges the label down the page without changing where the page breaks. */
+    .print-page .qr-card { position: relative; top: var(--print-shift, 0mm); }
   }
 </style>
 <style id="paperStyle">@page { size: letter; margin: 0.25in; }</style>
@@ -272,6 +274,9 @@
               <label style="display:flex;gap:8px;align-items:center;margin-top:8px;font-size:13px;font-weight:600">
                 <input type="checkbox" id="showOdo" onchange="saveSettings(); renderPreview()"> Show odometer on the label
               </label>
+              <label class="f" style="margin-top:12px">Move the label down the page (mm)</label>
+              <input type="number" id="printShift" min="0" max="60" step="1" onchange="saveSettings(); applyPrintShift()">
+              <div style="font-size:11px;color:var(--muted);margin-top:4px">Only affects the printout, not the preview.</div>
             </fieldset>
             <fieldset>
               <legend>QR style</legend>
@@ -314,13 +319,15 @@
 <div class="toast" id="toast"></div>
 
 <script>
-const SETTINGS_KEY = 'crosby_label_settings_v2';
+const SETTINGS_KEY = 'crosby_label_settings_v3';
 const PAPER = {
   letter: { css: '@page { size: letter; margin: 0.25in; }', pageHeight: '9.5in' },
   a4:     { css: '@page { size: A4; margin: 0.25in; }',     pageHeight: '10.2in' }
 };
 const THEMES = {
-  'vw-classic': { dotType: 'dots',    dotColor: '#001e50', cornerSquareType: 'extra-rounded', cornerSquareColor: '#001e50', cornerDotType: 'dot',    cornerDotColor: '#00b0f0' },
+  // Square modules, rounded frame: the branded look, but with edges that stay
+  // hard at label size. Round dots print soft, which reads as a smeared code.
+  'vw-classic': { dotType: 'square',  dotColor: '#001e50', cornerSquareType: 'extra-rounded', cornerSquareColor: '#001e50', cornerDotType: 'dot',    cornerDotColor: '#00b0f0' },
   'r-line':     { dotType: 'rounded', dotColor: '#111111', cornerSquareType: 'extra-rounded', cornerSquareColor: '#111111', cornerDotType: 'square', cornerDotColor: '#001e50' },
   'gti-sport':  { dotType: 'classy',  dotColor: '#000000', cornerSquareType: 'extra-rounded', cornerSquareColor: '#e32636', cornerDotType: 'dot',    cornerDotColor: '#000000' },
   'minimalist': { dotType: 'square',  dotColor: '#000000', cornerSquareType: 'square',        cornerSquareColor: '#000000', cornerDotType: 'square', cornerDotColor: '#000000' }
@@ -350,6 +357,7 @@ function loadSettings() {
   $('paperSize').value = saved.paperSize || 'letter';
   $('showGuide').checked = saved.showGuide !== false;
   $('showOdo').checked = Boolean(saved.showOdo);
+  $('printShift').value = Number.isFinite(saved.printShiftMm) ? saved.printShiftMm : 10;
   $('styleSelect').value = saved.styleSelect || 'vw-classic';
   const style = { ...THEMES['vw-classic'], ...(saved.style || {}) };
   STYLE_FIELDS.forEach((field) => { $(field).value = style[field]; });
@@ -362,6 +370,7 @@ function saveSettings() {
     paperSize: $('paperSize').value,
     showGuide: $('showGuide').checked,
     showOdo: $('showOdo').checked,
+    printShiftMm: Number($('printShift').value) || 0,
     styleSelect: $('styleSelect').value,
     style
   }));
@@ -369,6 +378,11 @@ function saveSettings() {
 
 function applyPaper() {
   $('paperStyle').textContent = (PAPER[$('paperSize').value] || PAPER.letter).css;
+}
+
+function applyPrintShift() {
+  const mm = Math.min(60, Math.max(0, Number($('printShift').value) || 0));
+  document.documentElement.style.setProperty('--print-shift', mm + 'mm');
 }
 
 function applyTheme() {
@@ -505,6 +519,7 @@ async function toDataUrl(src) {
 async function init() {
   loadSettings();
   applyPaper();
+  applyPrintShift();
   try {
     APP = await api('api/state');
     MODE = 'server';
@@ -708,9 +723,38 @@ function selectAll(tab, on) {
 
 /* ---------------- label building ---------------- */
 
-// The label is 160px wide on screen and 1.67in on paper; drawing at 640 gives
-// roughly 380dpi of QR to print from.
-const QR_RENDER_PX = 640;
+// The label prints the code at 1.67in, so ~560px is about 335dpi to print from.
+// Oversizing beyond that is counter-productive: the browser resamples it down
+// for the printer, and resampling is what softens the edges.
+const QR_TARGET_PX = 560;
+
+// Module counts repeat for links of the same length, so one probe covers a run.
+const MODULE_COUNTS = new Map();
+
+function detachedStage() {
+  const stage = document.createElement('div');
+  stage.style.cssText = 'position:absolute;left:-10000px;top:0;width:0;height:0;overflow:hidden;';
+  document.body.appendChild(stage);
+  return stage;
+}
+
+/** How many modules across this link needs - used to keep them whole pixels. */
+async function qrModuleCount(data) {
+  if (MODULE_COUNTS.has(data.length)) return MODULE_COUNTS.get(data.length);
+  let count = 0;
+  try {
+    const probe = new QRCodeStyling({ width: 200, height: 200, type: 'canvas', data, qrOptions: { errorCorrectionLevel: 'H' } });
+    const stage = detachedStage();
+    probe.append(stage);
+    await probe.getRawData('png');
+    count = probe._qr && typeof probe._qr.getModuleCount === 'function' ? probe._qr.getModuleCount() : 0;
+    stage.remove();
+  } catch {
+    count = 0;
+  }
+  MODULE_COUNTS.set(data.length, count);
+  return count;
+}
 
 function blobToDataUrl(blob) {
   return new Promise((resolve) => {
@@ -741,9 +785,18 @@ function waitForCanvas(stage, timeoutMs = 6000) {
  */
 async function renderQr(holder, url) {
   const style = qrStyle();
+
+  // Size the canvas so every module is a whole number of pixels, with a proper
+  // four-module quiet zone. Fractional modules put a soft edge on every square.
+  const modules = await qrModuleCount(url);
+  const across = modules ? modules + 8 : 0;
+  const modulePx = across ? Math.max(4, Math.round(QR_TARGET_PX / across)) : 0;
+  const size = across ? across * modulePx : QR_TARGET_PX;
+
   const qr = new QRCodeStyling({
-    width: QR_RENDER_PX,
-    height: QR_RENDER_PX,
+    width: size,
+    height: size,
+    margin: modulePx * 4,
     type: 'canvas',
     data: url,
     image: ICON_DATA_URL || undefined,
@@ -757,9 +810,7 @@ async function renderQr(holder, url) {
     imageOptions: { margin: 12, imageSize: 0.25, crossOrigin: 'anonymous' }
   });
 
-  const stage = document.createElement('div');
-  stage.style.cssText = 'position:absolute;left:-10000px;top:0;width:0;height:0;overflow:hidden;';
-  document.body.appendChild(stage);
+  const stage = detachedStage();
   qr.append(stage);
 
   let source = '';
