@@ -1,12 +1,11 @@
 #!/usr/bin/env node
-// Two questions left: what does the grid put in its params object, and what
-// filter values can we slice the lot by?
+// The grid has a <pagination> component wired to updatePage(). Find what that
+// sends, and confirm facet slicing reaches all 40 vehicles either way.
 import { fetchHtml, sleep } from './lib/fetcher.mjs';
 import { loadConfig } from './scrape.mjs';
 
 const listingUrl = process.argv[2] || loadConfig().listingUrl;
 const { html } = await fetchHtml(listingUrl, { timeoutMs: 30000 });
-
 const gvStart = html.indexOf('{', /globalVars\s*=\s*\{/.exec(html).index);
 let depth = 0;
 let gvEnd = gvStart;
@@ -28,48 +27,49 @@ async function call(endpoint) {
     }
   });
   const text = await response.text();
-  try { return JSON.parse(text); } catch { return { raw: text.slice(0, 200) }; }
+  try { return JSON.parse(text); } catch { return { raw: text.slice(0, 160) }; }
+}
+
+const { html: bundle } = await fetchHtml(gv.pluginsUrl + '/convertus-vms/include/srp/convertus-v4/main.convertus.min.js', { timeoutMs: 30000 });
+console.log('=== paging code in the bundle ===');
+for (const term of ['updatePage', 'availablePages', 'currentPage']) {
+  let shown = 0;
+  for (const match of bundle.matchAll(new RegExp(term, 'g'))) {
+    if (shown >= 3) break;
+    console.log(`  [${term}] ...` + bundle.slice(Math.max(0, match.index - 450), match.index + 450).replace(/\s+/g, ' ') + '...');
+    console.log('');
+    shown += 1;
+  }
 }
 
 const base = await call(filtering('sc=used'));
-const baseStocks = new Set((base.results || []).map((v) => v.stock_number));
-console.log('baseline: ' + baseStocks.size + ' of ' + (base.summary || {}).total_vehicles);
+const total = (base.summary || {}).total_vehicles;
+const baseStocks = (base.results || []).map((v) => v.stock_number);
+console.log(`\n=== baseline: ${baseStocks.length} of ${total} ===`);
 
-console.log('\n=== all_filters ===');
-const all = base.all_filters || {};
-console.log('  keys: ' + Object.keys(all).join(', '));
-for (const key of ['yr', 'mk', 'md', 'bs', 'sc']) {
-  if (all[key]) console.log('  ' + key + ': ' + JSON.stringify(all[key]).slice(0, 400));
+console.log('\n=== summary facets available for slicing ===');
+for (const [key, value] of Object.entries(base.summary || {})) {
+  if (Array.isArray(value) && value.length && value[0] && value[0].name !== undefined) {
+    console.log('  ' + key + ': ' + value.map((entry) => `${entry.name}(${entry.amount})`).join(', ').slice(0, 300));
+  }
 }
 
-console.log('\n=== how the page talks about paging ===');
-for (const term of ['pagination', 'paging', 'loadMore', 'load-more', 'itemsPerPage', 'perPage', 'currentPage', '"pn"', 'pn:', '"pg"', 'pg:']) {
-  const index = html.indexOf(term);
-  if (index !== -1) console.log(`  ${term}: ...${html.slice(Math.max(0, index - 200), index + 200).replace(/\s+/g, ' ')}...`);
+console.log('\n=== page + size combinations ===');
+for (const query of ['sc=used&pn=2&ipp=30', 'sc=used&pg=2&ipp=30', 'sc=used&pn=2&ipp=24', 'sc=used&page=2&per_page=30', 'sc=used&ipp=30&pn=2&sb=price']) {
+  const payload = await call(filtering(query));
+  const stocks = (payload.results || []).map((v) => v.stock_number);
+  console.log(`  ${query.padEnd(34)} -> ${stocks.length}, first=${stocks[0]}${stocks[0] && stocks[0] !== baseStocks[0] ? '  <-- DIFFERENT' : ''}`);
+  await sleep(120);
 }
 
-const bundleUrl = gv.pluginsUrl + '/convertus-vms/include/srp/convertus-v4/main.convertus.min.js';
-const { html: bundle } = await fetchHtml(bundleUrl, { timeoutMs: 30000 });
-console.log('\n=== where the bundle builds vehicle-request params ===');
-let shown = 0;
-for (const match of bundle.matchAll(/["']sc["']\s*:/g)) {
-  if (shown >= 5) break;
-  console.log('  >>> ' + bundle.slice(Math.max(0, match.index - 400), match.index + 400).replace(/\s+/g, ' '));
-  console.log('');
-  shown += 1;
-}
-
-// Slice by make: the fallback that reaches every vehicle.
-console.log('\n=== make slices ===');
-const makes = (all.mk || []).map((entry) => entry.name || entry.value || entry).filter(Boolean);
-console.log('  makes: ' + makes.join(', '));
+console.log('\n=== slicing by body style ===');
 const collected = new Set(baseStocks);
-for (const make of makes.slice(0, 20)) {
-  const payload = await call(filtering('sc=used&mk=' + encodeURIComponent(make)));
+for (const entry of (base.summary || {}).bs || []) {
+  const payload = await call(filtering('sc=used&bs=' + encodeURIComponent(entry.name)));
   const stocks = (payload.results || []).map((v) => v.stock_number);
   const fresh = stocks.filter((stock) => !collected.has(stock));
   fresh.forEach((stock) => collected.add(stock));
-  console.log(`  mk=${make}: ${stocks.length} returned (total ${(payload.summary || {}).total_vehicles}), ${fresh.length} new`);
+  console.log(`  bs=${entry.name}: expected ${entry.amount}, got ${stocks.length}, ${fresh.length} new`);
   await sleep(120);
 }
-console.log('\n  distinct stock numbers gathered: ' + collected.size + ' of ' + (base.summary || {}).total_vehicles);
+console.log(`\n  gathered ${collected.size} of ${total} distinct vehicles`);
