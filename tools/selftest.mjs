@@ -366,6 +366,27 @@ async function main() {
     assert.equal(run.inventory.vehicles[0].stock, 'FB0001');
   });
 
+  // ---- the label page itself ----
+  // These two mistakes both shipped and both broke printing, so they are worth
+  // a guard even though this file cannot open a browser.
+  const pageSource = fs.readFileSync(path.join(scrape.ROOT, 'index.html'), 'utf8');
+
+  check('libraries are loaded by relative path', async () => {
+    const absolute = pageSource.match(/<script[^>]+src="\/[^"]*"/g) || [];
+    assert.equal(absolute.length, 0,
+      'a published project site lives in a subdirectory, where "/vendor/..." points above it: ' + absolute.join(', '));
+  });
+
+  check('the QR is drawn to a canvas, not left as a clipped drawing', async () => {
+    assert.match(pageSource, /type: 'canvas'/, 'print engines drop the clip-path the SVG output relies on');
+  });
+
+  check('the centre logo stays small enough for the code to survive', async () => {
+    const match = /imageSize:\s*([\d.]+)/.exec(pageSource);
+    assert.ok(match, 'imageSize not found');
+    assert.ok(Number(match[1]) <= 0.3, `imageSize ${match[1]} hides too much of the code to scan`);
+  });
+
   let passed = 0;
   for (const { label, fn } of checks) {
     try {

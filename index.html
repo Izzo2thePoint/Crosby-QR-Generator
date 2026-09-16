@@ -99,7 +99,7 @@
   .qr-card.guide { border: 1px dashed #b9c4d0; }
   .qr-card .dealership-logo { max-width: 1.5in; max-height: 0.42in; height: auto; width: auto; display: block; }
   .qr-card .qr-holder { display: flex; align-items: center; justify-content: center; }
-  .qr-card .qr-holder svg { display: block; }
+  .qr-card .qr-holder img { display: block; width: 160px; height: 160px; }
   .qr-card .vehicle-info { width: 100%; display: flex; flex-direction: column; justify-content: center; }
   .qr-card .vehicle-title { font-size: 18px; font-weight: 800; margin: 0 0 3px; line-height: 1.08; letter-spacing: -0.5px; color: var(--vw-blue); }
   .qr-card .vehicle-trim { font-size: 13px; font-weight: 600; color: #444; margin: 0 0 6px; line-height: 1.15; }
@@ -708,24 +708,43 @@ function selectAll(tab, on) {
 
 /* ---------------- label building ---------------- */
 
-function waitForQr(holder, expectImage, timeoutMs = 5000) {
+// The label is 160px wide on screen and 1.67in on paper; drawing at 640 gives
+// roughly 380dpi of QR to print from.
+const QR_RENDER_PX = 640;
+
+function blobToDataUrl(blob) {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = () => resolve('');
+    reader.readAsDataURL(blob);
+  });
+}
+
+function waitForCanvas(stage, timeoutMs = 6000) {
   return new Promise((resolve) => {
     const started = Date.now();
     (function check() {
-      const svg = holder.querySelector('svg');
-      const ready = svg && svg.childNodes.length > 0 && (!expectImage || svg.querySelector('image'));
-      if (ready || Date.now() - started > timeoutMs) { resolve(Boolean(svg)); return; }
+      const canvas = stage.querySelector('canvas');
+      if ((canvas && canvas.width > 0) || Date.now() - started > timeoutMs) { resolve(canvas || null); return; }
       requestAnimationFrame(check);
     })();
   });
 }
 
+/**
+ * Draws the QR to a canvas and puts a PNG on the label.
+ *
+ * The library's SVG output is one filled rectangle clipped to ~2000 circles.
+ * Print engines drop that clip and paint the rectangle, which comes out of the
+ * printer as a solid block. A PNG has nothing to drop.
+ */
 async function renderQr(holder, url) {
   const style = qrStyle();
   const qr = new QRCodeStyling({
-    width: 160,
-    height: 160,
-    type: 'svg',
+    width: QR_RENDER_PX,
+    height: QR_RENDER_PX,
+    type: 'canvas',
     data: url,
     image: ICON_DATA_URL || undefined,
     qrOptions: { errorCorrectionLevel: 'H' },
@@ -733,11 +752,36 @@ async function renderQr(holder, url) {
     backgroundOptions: { color: '#ffffff' },
     cornersSquareOptions: { color: style.cornerSquareColor, type: style.cornerSquareType },
     cornersDotOptions: { color: style.cornerDotColor, type: style.cornerDotType },
-    imageOptions: { margin: 4, imageSize: 0.4, crossOrigin: 'anonymous' }
+    // 0.4 hides more of the code than error correction can rebuild, which makes
+    // the label unscannable; 0.25 still shows the roundel clearly and decodes.
+    imageOptions: { margin: 12, imageSize: 0.25, crossOrigin: 'anonymous' }
   });
+
+  const stage = document.createElement('div');
+  stage.style.cssText = 'position:absolute;left:-10000px;top:0;width:0;height:0;overflow:hidden;';
+  document.body.appendChild(stage);
+  qr.append(stage);
+
+  let source = '';
+  try {
+    const blob = await qr.getRawData('png');   // waits for the logo to be drawn too
+    if (blob) source = await blobToDataUrl(blob);
+  } catch {
+    source = '';
+  }
+  if (!source) {
+    const canvas = await waitForCanvas(stage);
+    try { source = canvas ? canvas.toDataURL('image/png') : ''; } catch { source = ''; }
+  }
+  stage.remove();
+
   holder.innerHTML = '';
-  qr.append(holder);
-  await waitForQr(holder, Boolean(ICON_DATA_URL));
+  if (!source) return;
+  const image = document.createElement('img');
+  image.alt = '';
+  image.src = source;
+  holder.appendChild(image);
+  if (image.decode) await image.decode().catch(() => {});
 }
 
 /** Shrinks text until it fits the label instead of spilling off the card. */
