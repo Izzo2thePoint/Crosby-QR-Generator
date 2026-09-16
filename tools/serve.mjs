@@ -26,7 +26,7 @@ const MIME = {
   '.ico': 'image/x-icon'
 };
 
-const STATIC_DIRS = ['vendor', 'assets'];
+const STATIC_DIRS = ['vendor', 'assets', 'data', 'tools'];
 const LOGO_NAMES = { header: 'logo-header', icon: 'logo-icon' };
 
 let lastScrapeError = null;

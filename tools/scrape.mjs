@@ -194,18 +194,34 @@ export async function runScrape(options = {}) {
   const result = reconcile(state, printable, { baseline: options.baseline });
   saveState(PATHS.state, result.state);
 
+  // Stamp each vehicle with when it was first seen and whether it predates the
+  // tool. The published page reads this file on its own, with no server behind it.
+  const decorated = printable.map((vehicle) => {
+    const record = result.state.vehicles[vehicle.key] || {};
+    return {
+      ...vehicle,
+      firstSeen: record.firstSeen || null,
+      origin: record.status === 'baseline' ? 'baseline' : 'new'
+    };
+  });
+
   const inventory = {
     fetchedAt: new Date().toISOString(),
     listingUrl,
     pagesFetched,
     strategies: Object.fromEntries(strategyTally),
+    config: {
+      dealerName: config.dealerName,
+      listingUrl,
+      qrTracking: config.qrTracking || {}
+    },
     counts: {
       found: vehicles.length,
       printable: printable.length,
       incomplete: vehicles.length - printable.length,
       newThisRun: result.added.filter((record) => record.status === 'queued').length
     },
-    vehicles: printable,
+    vehicles: decorated,
     incomplete: vehicles.filter((vehicle) => !isPrintable(vehicle))
   };
   writeJson(PATHS.inventory, inventory);

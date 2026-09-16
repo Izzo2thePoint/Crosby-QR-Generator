@@ -1,73 +1,86 @@
 # Crosby VW Label Studio
 
 Finds newly listed pre-owned vehicles on crosbyvw.com, builds a 2.5" × 3.5" QR window
-label for each one, and prints them — one label per page — without typing a thing.
+label for each one, and prints them — one label per page — with no data entry.
 
 The QR code on each label opens that vehicle's page on the website, with a tracking tag
 attached so QR scans show up in your website analytics.
 
+**Nothing to install.** GitHub checks the inventory through the day and republishes a web
+page. You open that page in any browser, tick the new vehicles, and print.
+
 ---
 
-## Install once
+## Setup — once, all in the browser
 
-1. **Install Node.js** — the LTS build from <https://nodejs.org>. Click through the installer
-   with the defaults. (This is the only prerequisite; nothing else to install.)
-2. **Download this folder** to the computer that has the printer (Code → Download ZIP on
-   GitHub, then unzip it somewhere permanent like `Documents\Crosby-QR-Generator`).
-3. **Double-click `run.cmd`** (`run.sh` on Mac/Linux). A black window opens and your browser
-   opens the Label Studio.
-4. **Upload your two logos** the first time it runs:
-   - the wide *Crosby Volkswagen* wordmark (top of the label)
-   - the square VW roundel (centre of the QR code)
+1. **Merge this into `main`.** The scheduled inventory check only runs from the main branch.
+2. **Turn on GitHub Pages:** repository **Settings → Pages → Build and deployment → Source:
+   GitHub Actions**. Save.
+3. **Run the first check:** **Actions** tab → *Refresh inventory and publish label page* →
+   **Run workflow**. It takes about a minute.
+4. **Add your logos** so every computer gets them: **Add file → Upload files** into the
+   `assets` folder, named exactly:
+   - `logo-header.png` — the wide *Crosby Volkswagen* wordmark (top of the label)
+   - `logo-icon.png` — the square VW roundel (centre of the QR code)
 
-   They are saved into the `assets` folder, so you only do this once.
+   (PNG with a transparent background looks best. SVG/JPG also work — keep the same names.)
+   If you'd rather not commit them, the page will ask you to upload them and remember them in
+   that browser instead.
+5. **Bookmark the page:** `https://izzo2thepoint.github.io/Crosby-QR-Generator/`
 
-> **First run is deliberately quiet.** Everything already listed on the website is recorded as
-> "already on the lot" so you don't accidentally print 60 labels. From then on, anything new
-> that appears on the site shows up under **New arrivals**. Need a label for a vehicle that was
-> already in stock? It's in the **All used inventory** tab.
-
-**Handy:** right-click `run.cmd` → *Send to* → *Desktop (create shortcut)* for one-click access.
+> **The first check prints nothing on purpose.** Everything already listed is recorded as
+> "already on the lot" so you don't print 60 labels by accident. Anything that appears after
+> that shows up under **New arrivals**. Labels for current stock are in **All used inventory**.
 
 ---
 
 ## Everyday use
 
-1. Double-click `run.cmd`. It checks the website automatically as it starts.
-2. The **New arrivals** tab lists every pre-owned vehicle that has appeared since the last time
-   you printed. They're all ticked by default.
-3. Click **Print selected labels** → your normal print dialog opens → print.
-4. Answer **Yes, mark as printed** on the bar at the bottom. Those vehicles stop appearing as new.
-   If the print didn't come out right, choose **Not yet** and they stay queued.
-5. Close the black window when you're done.
-
-Other things you can do:
+1. Open the bookmark.
+2. **New arrivals** lists every pre-owned vehicle that has appeared since you last printed,
+   already ticked.
+3. **Print selected labels** → your normal print dialog → print.
+4. Click **Yes, mark as printed** on the bar at the bottom. If it printed badly, choose
+   **Not yet** and they stay queued.
 
 | Want to… | Where |
 |---|---|
-| Reprint a label for any vehicle in stock | **All used inventory** tab (search by stock #, model or VIN) |
-| Label a vehicle the website doesn't show yet | **Manual label** tab |
-| Drop a vehicle out of the queue without printing | Tick it → **Skip selected** |
-| Change QR colours/shape, paper size, cut guide | **Label & printing options** on the right |
-| Check for new stock without restarting | **Check for new vehicles** button, top right |
+| Reprint a label for anything in stock | **All used inventory** (search by stock #, model, VIN) |
+| Label a vehicle not on the website yet | **Manual label** |
+| Drop a vehicle without printing | Tick it → **Skip selected** |
+| QR colours/shape, paper size, cut guide | **Label & printing options** |
+| Pull the newest list right now | **Reload latest inventory**, top right |
 
-### Printer settings that matter
+### Print dialog settings that matter
 
-In the print dialog, set **Margins: Default** and **Scale: 100%** (not "Fit to page"), and turn
-**Background graphics** on so the QR prints solid black. Chrome and Edge both remember this.
+**Margins: Default**, **Scale: 100%** (not "Fit to page"), and **Background graphics: on** so the
+QR prints solid. Chrome and Edge remember this after the first time.
+
+### Two things to know about the published page
+
+- **Which labels you've printed is remembered in that browser.** Print from the same computer
+  and browser each time, or the queue will look different. There's a **Clear print history**
+  button under *Label & printing options*.
+- **The page is public** (that's how free GitHub Pages works). It shows the same inventory
+  your website already shows publicly, but don't add anything private to it.
 
 ---
 
-## How "new" is decided
+## When the automatic check can't read the site
 
-The tool keeps a record in `data/state.json` of every vehicle it has already produced a label
-for, keyed by stock number (VIN or page link as a backstop). A vehicle counts as new until you
-print or skip it — so a paper jam, a crash, or closing the tab never loses a label.
+Websites change and bot filters happen. The page tells you when its list is stale, and the
+**Paste from website** tab is the backup:
 
-If a vehicle sells before you print it, it quietly drops off the queue and the tool tells you.
+1. Open the used inventory page in another tab.
+2. **Ctrl + U** (view source), then **Ctrl + A**, **Ctrl + C**.
+3. Paste into the box → **Read vehicles from this page**.
 
-**Keep the `data` folder.** If you move the tool to another computer, copy `data/state.json`
-across too, otherwise the new copy treats the whole lot as fresh stock.
+It reads the pasted page with the same logic as the automatic check, entirely inside your
+browser, and the vehicles land in the queue as normal.
+
+If that happens, it means the reader needs adjusting — the failed run saves a copy of what it
+received under `data/debug/` in the Actions logs. Send it along with a note and it's usually a
+quick fix.
 
 ---
 
@@ -80,41 +93,50 @@ across too, otherwise the new copy treats the whole lot as fresh stock.
 }
 ```
 
-- `listingUrl` — the inventory page it reads. Change the filters here (for example drop
-  `in_transit=true` if you only want vehicles physically on the lot), or paste any other
-  filtered inventory URL from the website.
-- `qrTracking` — parameters added to each QR link. Set it to `{}` for clean links.
+- `listingUrl` — the inventory page it reads. Drop `in_transit=true` to only get vehicles
+  physically on the lot, or paste any filtered inventory URL from the website.
+- `qrTracking` — parameters added to each QR link. `{}` for clean links.
 - `requestDelayMs` / `maxPages` — how gently it walks the site. The defaults are polite.
-- `port` — change only if something else on the PC uses 4321.
+
+**How often it checks:** every two hours between 8am and 6pm Kitchener time. Change the `cron`
+line in `.github/workflows/inventory.yml` (it's in UTC — add 4 hours to Eastern in summer, 5 in
+winter).
 
 ---
 
-## If something goes wrong
+## Optional: run it on a PC instead
 
-**"No vehicles could be read from the listing page."**
-The website's layout changed, or the listing is rendered by JavaScript the tool can't see. The
-tool saves a copy of the page it received to `data/debug/listing-page-1.html` — send that file
-to whoever maintains this tool and the reader can be re-pointed in minutes.
+If a computer ever does have Node.js (nodejs.org, LTS), you can run the whole thing locally and
+skip GitHub entirely — the print history then lives in `data/state.json` on that PC instead of
+in a browser:
 
-**"Could not reach crosbyvw.com."**
-Usually the dealership network or the site being down. The last successful inventory stays on
-screen; hit **Check for new vehicles** to retry.
+```
+run.cmd        Windows
+./run.sh       Mac / Linux
+```
 
-**A vehicle is missing a stock number.**
-It gets listed as "skipped — incomplete" rather than printed with a blank field. Use the
-**Manual label** tab for that one.
+It scrapes, opens the same page at `http://127.0.0.1:4321`, and remembers what was printed.
+Nothing is uploaded anywhere; the only outbound traffic is reading crosbyvw.com.
 
-**Nothing opens / the black window closes instantly.**
-Node.js isn't installed or isn't on the PATH. Reinstall from <https://nodejs.org> and reboot.
+---
 
-**Check the plumbing at any time:**
+## How "new" is decided
+
+Every vehicle is keyed by stock number (VIN, then page link, as backstops). A vehicle counts as
+new until you print or skip it — so a paper jam, a crash, or a closed tab never loses a label.
+If a vehicle sells before you print it, it drops off the queue and the page says so.
+
+---
+
+## Checking the plumbing
 
 ```
 node tools/selftest.mjs
 ```
 
-That stands up a pretend dealer website, scrapes it, and walks the whole
-new-vehicle → print → marked-printed cycle. All ten checks should pass.
+Stands up a pretend dealer website and walks the whole cycle: scrape → new arrival → print →
+marked printed → vehicle sold. It also runs automatically on every pull request
+(**Actions → Self-test**), so you don't need Node to see the result.
 
 ---
 
@@ -122,16 +144,13 @@ new-vehicle → print → marked-printed cycle. All ten checks should pass.
 
 | File | Purpose |
 |---|---|
-| `run.cmd` / `run.sh` | What you double-click |
-| `labels.html` | The Label Studio screen (review, preview, print) |
+| `labels.html` | The Label Studio screen — published to Pages as `index.html` |
+| `.github/workflows/inventory.yml` | The scheduled check and publish |
 | `config.json` | Settings |
-| `tools/scrape.mjs` | Reads the inventory listing, decides what's new |
-| `tools/serve.mjs` | Runs the local app, remembers what was printed |
+| `tools/scrape.mjs` | Reads the listing, decides what's new |
+| `tools/serve.mjs` | Local-PC mode only: runs the app, records what was printed |
 | `tools/lib/` | Page reading, vehicle matching, print history |
 | `tools/selftest.mjs` | End-to-end check |
-| `vendor/` | QR + image libraries, kept local so nothing depends on the internet |
+| `vendor/` | QR + image libraries, kept local so nothing depends on a CDN |
 | `assets/` | Your logos |
-| `data/` | Inventory snapshot and print history (don't delete) |
-
-Nothing is uploaded anywhere: the app runs on `127.0.0.1`, reachable only from that computer.
-The only outbound traffic is reading crosbyvw.com's public inventory pages.
+| `data/` | Published inventory + first-seen history (committed by the scheduled job) |

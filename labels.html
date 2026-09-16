@@ -144,8 +144,10 @@
 
 <div class="wrap">
   <div id="offlineNotice" class="banner banner-error" style="display:none">
-    <strong>Start the app first.</strong> This page needs its helper running. Close this tab, double-click
-    <code>run.cmd</code> (Windows) or <code>run.sh</code> (Mac/Linux) in the Crosby-QR-Generator folder, and it will reopen automatically.
+    <strong>No inventory data yet.</strong> If you are using the published page, the hourly inventory job has not
+    finished its first run &mdash; check the Actions tab on GitHub. If you are running this on your own PC, start it with
+    <code>run.cmd</code> (Windows) or <code>run.sh</code> (Mac/Linux).
+    <div id="offlineDetail" style="margin-top:6px;font-size:12px;opacity:0.8"></div>
   </div>
 
   <div id="setupScreen" class="card pad" style="display:none">
@@ -172,6 +174,7 @@
       <button class="tab active" id="tab-queue" onclick="switchTab('queue')">New arrivals <span class="count" id="queueCount">0</span></button>
       <button class="tab" id="tab-all" onclick="switchTab('all')">All used inventory</button>
       <button class="tab" id="tab-manual" onclick="switchTab('manual')">Manual label</button>
+      <button class="tab" id="tab-import" onclick="switchTab('import')">Paste from website</button>
     </div>
 
     <div class="row-split">
@@ -195,6 +198,22 @@
             <button class="btn-print" onclick="printSelected('all')">Print selected labels</button>
           </div>
           <div id="allBody"></div>
+        </div>
+
+        <div id="view-import" class="card pad" style="display:none">
+          <p style="margin-top:0;color:var(--muted);font-size:14px;line-height:1.55">
+            Backup route, for when the automatic check can't read the website. On the inventory page press
+            <strong>Ctrl&nbsp;+&nbsp;U</strong> (View page source), then <strong>Ctrl&nbsp;+&nbsp;A</strong> and
+            <strong>Ctrl&nbsp;+&nbsp;C</strong>, and paste it below. Nothing leaves this browser.
+          </p>
+          <p style="font-size:13px;margin:0 0 10px"><a id="listingLink" href="#" target="_blank" rel="noopener">Open the used inventory page &rarr;</a></p>
+          <textarea id="pasteBox" rows="7" placeholder="Paste the page source here"
+            style="width:100%;font-family:monospace;font-size:12px;padding:10px;border:1px solid var(--line);border-radius:4px"></textarea>
+          <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+            <button class="btn-primary" onclick="importFromSource()">Read vehicles from this page</button>
+            <button class="btn-ghost btn-sm" onclick="clearImported()">Remove imported vehicles</button>
+            <span id="importResult" style="font-size:13px;color:var(--muted)"></span>
+          </div>
         </div>
 
         <div id="view-manual" class="card pad" style="display:none">
@@ -268,7 +287,10 @@
                 <div><label class="f">Eye colour</label><input type="color" id="cornerDotColor" onchange="manualStyleChange()"></div>
               </div>
             </fieldset>
-            <button class="btn-ghost btn-sm" onclick="resetLogos()">Replace saved logos</button>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <button class="btn-ghost btn-sm" onclick="resetLogos()">Replace saved logos</button>
+              <button class="btn-ghost btn-sm" id="clearHistoryBtn" style="display:none" onclick="clearPrintHistory()">Clear print history</button>
+            </div>
           </div>
         </details>
       </div>
@@ -301,6 +323,8 @@ const THEMES = {
 const STYLE_FIELDS = ['dotType', 'dotColor', 'cornerSquareType', 'cornerSquareColor', 'cornerDotType', 'cornerDotColor'];
 
 let APP = null;
+let MODE = 'server';        // 'server' = local helper running, 'static' = published page
+let RAW_INVENTORY = null;   // the published data/inventory.json, in static mode
 let TAB = 'queue';
 let PENDING = [];
 let ICON_DATA_URL = '';
@@ -363,6 +387,90 @@ function qrStyle() {
 
 /* ---------------- server ---------------- */
 
+/* ---------------- backend: local helper, or published page ---------------- */
+
+const HISTORY_KEY = 'crosby_print_history_v1';
+const IMPORT_KEY = 'crosby_imported_vehicles_v1';
+const LOGO_KEYS = { header: 'crosby_header', icon: 'crosby_icon' };
+
+function readLocal(key, fallback) {
+  try { return JSON.parse(localStorage.getItem(key) || '') || fallback; } catch { return fallback; }
+}
+
+function writeLocal(key, value) {
+  try { localStorage.setItem(key, JSON.stringify(value)); } catch { /* private mode - stay in memory */ }
+}
+
+let LOGO_CACHE = null;
+
+/** Resolved once per page load - probing for logo files on every redraw is wasteful. */
+async function resolveLogos() {
+  if (LOGO_CACHE) return LOGO_CACHE;
+  LOGO_CACHE = {
+    header: (await findAssetLogo('logo-header')) || localStorage.getItem(LOGO_KEYS.header) || '',
+    icon: (await findAssetLogo('logo-icon')) || localStorage.getItem(LOGO_KEYS.icon) || ''
+  };
+  return LOGO_CACHE;
+}
+
+async function findAssetLogo(base) {
+  for (const ext of ['png', 'svg', 'jpg', 'jpeg', 'webp', 'gif']) {
+    try {
+      const response = await fetch('assets/' + base + '.' + ext, { method: 'HEAD' });
+      if (response.ok) return 'assets/' + base + '.' + ext;
+    } catch { /* keep trying */ }
+  }
+  return '';
+}
+
+/** In static mode the print history and logos live in this browser. */
+async function staticPayload(inventory) {
+  RAW_INVENTORY = inventory;
+  const config = inventory.config || {};
+  const history = readLocal(HISTORY_KEY, {});
+  const imported = readLocal(IMPORT_KEY, []);
+
+  const byKey = new Map();
+  for (const vehicle of [...(inventory.vehicles || []), ...imported]) {
+    if (!vehicle.key) continue;
+    if (!byKey.has(vehicle.key)) byKey.set(vehicle.key, vehicle);
+  }
+
+  const vehicles = [...byKey.values()].map((vehicle) => {
+    const local = history[vehicle.key] || {};
+    return {
+      ...vehicle,
+      status: local.status || (vehicle.origin === 'baseline' ? 'baseline' : 'queued'),
+      printedAt: local.printedAt || null
+    };
+  });
+
+  const logos = await resolveLogos();
+
+  return {
+    dealerName: config.dealerName || 'Crosby Volkswagen',
+    listingUrl: config.listingUrl || inventory.listingUrl || '',
+    qrTracking: config.qrTracking || {},
+    logos,
+    fetchedAt: inventory.fetchedAt || null,
+    counts: inventory.counts || null,
+    strategies: inventory.strategies || null,
+    incomplete: inventory.incomplete || [],
+    everScraped: true,
+    baselined: true,
+    lastError: null,
+    queuedButGone: [],
+    importedCount: imported.length,
+    vehicles
+  };
+}
+
+async function loadStatic() {
+  const response = await fetch('data/inventory.json?t=' + Date.now());
+  if (!response.ok) throw new Error('inventory.json has not been published yet');
+  return staticPayload(await response.json());
+}
+
 async function api(pathname, body) {
   const options = body
     ? { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }
@@ -392,10 +500,17 @@ async function init() {
   loadSettings();
   applyPaper();
   try {
-    APP = await api('/api/state');
+    APP = await api('api/state');
+    MODE = 'server';
   } catch {
-    $('offlineNotice').style.display = 'block';
-    return;
+    try {
+      APP = await loadStatic();
+      MODE = 'static';
+    } catch (error) {
+      $('offlineNotice').style.display = 'block';
+      $('offlineDetail').textContent = error.message;
+      return;
+    }
   }
   await afterStateLoad();
 }
@@ -403,6 +518,13 @@ async function init() {
 async function afterStateLoad() {
   document.title = (APP.dealerName || 'Crosby VW') + ' Label Studio';
   $('brandName').textContent = (APP.dealerName || 'Crosby VW') + ' Label Studio';
+
+  $('refreshBtn').textContent = MODE === 'static' ? 'Reload latest inventory' : 'Check for new vehicles';
+  // Pasting page source only helps when the cloud job cannot reach the site;
+  // the local helper reads the page directly, so it has nothing to offer there.
+  $('tab-import').style.display = MODE === 'static' ? '' : 'none';
+  $('clearHistoryBtn').style.display = MODE === 'static' ? '' : 'none';
+  $('listingLink').href = APP.listingUrl || 'https://www.crosbyvw.com/vehicles/';
 
   const hasLogos = Boolean(APP.logos && APP.logos.header && APP.logos.icon);
   $('setupScreen').style.display = hasLogos ? 'none' : 'block';
@@ -474,6 +596,21 @@ function render() {
 
 function renderBanners() {
   const parts = [];
+  if (MODE === 'static') {
+    const age = APP.fetchedAt ? Date.now() - new Date(APP.fetchedAt).getTime() : Infinity;
+    if (age > 12 * 60 * 60 * 1000) {
+      parts.push('<div class="banner banner-warn"><strong>This inventory list is out of date.</strong> ' +
+        'The automatic check last succeeded ' + (APP.fetchedAt ? new Date(APP.fetchedAt).toLocaleString() : 'never') +
+        '. Open the repository\'s Actions tab on GitHub to see why, or use <em>Paste from website</em> in the meantime.</div>');
+    } else {
+      parts.push('<div class="banner banner-info">The vehicle list refreshes by itself through the day. ' +
+        'Which labels you have printed is remembered <strong>in this browser</strong>, so print from the same computer and browser each time.</div>');
+    }
+    if (APP.importedCount) {
+      parts.push('<div class="banner banner-info">' + APP.importedCount +
+        ' vehicle(s) came from a pasted page rather than the automatic check.</div>');
+    }
+  }
   if (APP.lastError) {
     parts.push('<div class="banner banner-error"><strong>Could not reach crosbyvw.com.</strong> ' + esc(APP.lastError) +
       '<br>Showing the last inventory that was downloaded successfully.</div>');
@@ -545,7 +682,7 @@ function renderList(containerId, vehicles, tab) {
 
 function switchTab(tab) {
   TAB = tab;
-  ['queue', 'all', 'manual'].forEach((name) => {
+  ['queue', 'all', 'manual', 'import'].forEach((name) => {
     $('tab-' + name).classList.toggle('active', name === tab);
     $('view-' + name).style.display = name === tab ? '' : 'none';
   });
@@ -787,13 +924,27 @@ async function markSelected(status) {
 
 async function markKeys(keys, status) {
   try {
-    APP = await api('/api/mark', { keys, status });
+    if (MODE === 'static') {
+      const history = readLocal(HISTORY_KEY, {});
+      const now = new Date().toISOString();
+      keys.forEach((key) => { history[key] = { status, printedAt: status === 'printed' ? now : null }; });
+      writeLocal(HISTORY_KEY, history);
+      APP = await staticPayload(RAW_INVENTORY);
+    } else {
+      APP = await api('api/mark', { keys, status });
+    }
     keys.forEach((key) => SELECTED.delete(key));
     render();
     toast(keys.length + ' vehicle' + (keys.length === 1 ? '' : 's') + ' marked ' + status);
   } catch (error) {
     toast(error.message, true);
   }
+}
+
+function clearPrintHistory() {
+  if (!window.confirm('Clear the record of what has been printed? Every vehicle currently listed will look new again.')) return;
+  writeLocal(HISTORY_KEY, {});
+  staticPayload(RAW_INVENTORY).then((payload) => { APP = payload; render(); toast('Print history cleared'); });
 }
 
 /* ---------------- actions ---------------- */
@@ -804,12 +955,13 @@ async function refreshInventory() {
   button.textContent = 'Checking...';
   const before = APP ? queueList().length : 0;
   try {
-    APP = await api('/api/refresh', {});
+    APP = MODE === 'static' ? await loadStatic() : await api('api/refresh', {});
     render();
     const added = queueList().length - before;
     toast(APP.lastError ? 'Could not reach the website' : (added > 0
       ? added + ' new vehicle' + (added === 1 ? '' : 's') + ' found'
-      : 'No new vehicles since last check'), Boolean(APP.lastError));
+      : (MODE === 'static' ? 'Already showing the latest published inventory' : 'No new vehicles since last check')),
+    Boolean(APP.lastError));
   } catch (error) {
     toast(error.message, true);
   } finally {
@@ -832,7 +984,21 @@ async function saveLogos() {
   const icon = $('setupIconFile').files[0];
   if (!header || !icon) { toast('Pick both image files', true); return; }
   try {
-    APP = await api('/api/logos', { header: await fileToDataUrl(header), icon: await fileToDataUrl(icon) });
+    const headerData = await fileToDataUrl(header);
+    const iconData = await fileToDataUrl(icon);
+    if (MODE === 'static') {
+      try {
+        localStorage.setItem(LOGO_KEYS.header, headerData);
+        localStorage.setItem(LOGO_KEYS.icon, iconData);
+      } catch {
+        toast('This browser would not store the logos - try a normal (not private) window', true);
+        return;
+      }
+      LOGO_CACHE = null;
+      APP = await staticPayload(RAW_INVENTORY);
+    } else {
+      APP = await api('api/logos', { header: headerData, icon: iconData });
+    }
     await afterStateLoad();
     toast('Logos saved');
   } catch (error) {
@@ -844,6 +1010,64 @@ function resetLogos() {
   $('setupScreen').style.display = 'block';
   $('mainApp').style.display = 'none';
   window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ---------------- paste-from-website fallback ---------------- */
+
+async function importFromSource() {
+  const html = $('pasteBox').value.trim();
+  if (html.length < 200) { toast('Paste the page source into the box first', true); return; }
+  $('importResult').textContent = 'Reading the page...';
+
+  let extractVehicles;
+  try {
+    ({ extractVehicles } = await import('./tools/lib/extract.mjs'));
+  } catch {
+    $('importResult').textContent = '';
+    toast('Could not load the page reader', true);
+    return;
+  }
+
+  const base = APP.listingUrl || 'https://www.crosbyvw.com/vehicles/';
+  let found = [];
+  try {
+    found = extractVehicles(html, base).vehicles;
+  } catch (error) {
+    $('importResult').textContent = '';
+    toast('That did not look like a saved page: ' + error.message, true);
+    return;
+  }
+
+  const usable = found.filter((vehicle) => vehicle.key && vehicle.url && (vehicle.year || vehicle.model));
+  if (!usable.length) {
+    $('importResult').textContent = 'No vehicles found in that page source.';
+    return;
+  }
+
+  const existing = readLocal(IMPORT_KEY, []);
+  const byKey = new Map(existing.map((vehicle) => [vehicle.key, vehicle]));
+  let added = 0;
+  for (const vehicle of usable) {
+    if (byKey.has(vehicle.key)) continue;
+    byKey.set(vehicle.key, { ...vehicle, origin: 'new', imported: true, firstSeen: new Date().toISOString() });
+    added += 1;
+  }
+  writeLocal(IMPORT_KEY, [...byKey.values()]);
+
+  APP = await staticPayload(RAW_INVENTORY);
+  render();
+  $('pasteBox').value = '';
+  $('importResult').textContent = 'Read ' + usable.length + ' vehicle(s), ' + added + ' new.';
+  toast(added ? added + ' vehicle(s) added' : 'Those vehicles were already listed');
+  if (added) switchTab('queue');
+}
+
+async function clearImported() {
+  writeLocal(IMPORT_KEY, []);
+  APP = await staticPayload(RAW_INVENTORY);
+  render();
+  $('importResult').textContent = '';
+  toast('Pasted vehicles removed');
 }
 
 let toastTimer = null;
