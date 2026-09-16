@@ -1,0 +1,23 @@
+# Troubleshooting aid: reports what crosbyvw.com actually serves, from a runner
+# that can reach it. Run it from the Actions tab when a scrape comes back empty.
+name: Diagnose inventory page
+
+on:
+  workflow_dispatch:
+    inputs:
+      url:
+        description: 'Inventory URL to inspect (blank = the one in config.json)'
+        required: false
+        default: ''
+  push:
+    branches: ['claude/**']
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: node tools/diagnose.mjs ${{ inputs.url }}
