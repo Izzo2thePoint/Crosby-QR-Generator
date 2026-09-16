@@ -77,6 +77,109 @@ const FIXTURES = {
 const checks = [];
 const check = (label, fn) => checks.push({ label, fn });
 
+// ---------------------------------------------------------------------------
+// A stand-in for the real site: a Vue-rendered listing page that contains no
+// vehicles, plus the proxy its grid calls. The proxy answers 30 vehicles at a
+// time and reports the true total, exactly like the live one.
+// ---------------------------------------------------------------------------
+
+const PAGE_CAP = 30;
+
+function makeFleet() {
+  const spread = [
+    ['Volkswagen', 21, 'SUV'], ['Hyundai', 5, 'SUV'], ['Jeep', 2, 'SUV'], ['Chevrolet', 2, 'Sedan'],
+    ['Kia', 2, 'Sedan'], ['Nissan', 1, 'SUV'], ['Ford', 1, 'Minivan'], ['Mazda', 1, 'Hatchback'],
+    ['GMC', 1, 'SUV'], ['Dodge', 1, 'Minivan'], ['Chrysler', 1, 'Coupe'], ['Toyota', 1, 'SUV'], ['MINI', 1, 'Hatchback']
+  ];
+  const fleet = [];
+  let n = 0;
+  for (const [make, count, body] of spread) {
+    for (let i = 0; i < count; i += 1) {
+      n += 1;
+      fleet.push({
+        vehicle_id: 1000 + n,
+        vin: 'VIN' + String(n).padStart(14, '0'),
+        year: 2019 + (n % 5),
+        stock_number: 'ST' + String(n).padStart(4, '0'),
+        make,
+        model: make === 'Volkswagen' ? 'Atlas Cross Sport' : 'Model' + (n % 7),
+        trim: 'Sedan Highline',
+        search_trim: 'Highline',
+        body_style: body,
+        sale_class: 'Used',
+        odometer: 10000 + n * 137,
+        internet_price: 20000 + n * 250,
+        days_on_lot: n,
+        in_transit: 0,
+        on_order: 0,
+        exterior_color: n % 2 ? 'White' : 'Black',
+        transmission: 'Automatic',
+        vdp_url: `https://dealer.example/vehicles/${2019 + (n % 5)}/${make}/veh/${1000 + n}/?sale_class=Used`
+      });
+    }
+  }
+  return fleet;
+}
+
+function facetCounts(list, field) {
+  const counts = new Map();
+  for (const item of list) counts.set(item[field], (counts.get(item[field]) || 0) + 1);
+  return [...counts.entries()].map(([name, amount]) => ({ name, amount }));
+}
+
+function convertusSite(state) {
+  return http.createServer((req, res) => {
+    const base = `http://127.0.0.1:${state.port}`;
+    const url = new URL(req.url, base);
+
+    if (url.pathname === '/wp-content/plugins/convertus-vms/include/php/ajax-vehicles.php') {
+      state.proxyHits += 1;
+      if (state.brokenProxy) {
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ success: false, msg: 'Requested endpoint is invalid.' }));
+        return;
+      }
+      const endpoint = new URL(url.searchParams.get('endpoint'));
+      const filters = endpoint.searchParams;
+      let matched = state.fleet.filter((v) => (filters.get('sc') || 'used').toLowerCase() === v.sale_class.toLowerCase());
+      if (filters.get('mk')) matched = matched.filter((v) => v.make === filters.get('mk'));
+      if (filters.get('bs')) matched = matched.filter((v) => v.body_style === filters.get('bs'));
+      if (filters.get('yr')) matched = matched.filter((v) => String(v.year) === filters.get('yr'));
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({
+        results: matched.slice(0, PAGE_CAP),
+        summary: {
+          total_vehicles: matched.length,
+          mk: facetCounts(matched, 'make'),
+          bs: facetCounts(matched, 'body_style'),
+          yr: facetCounts(matched, 'year'),
+          ec: facetCounts(matched, 'exterior_color')
+        },
+        filters: {},
+        all_filters: {}
+      }));
+      return;
+    }
+
+    // The listing page: templates and configuration, no vehicles - like the real one.
+    res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+    res.end(`<!doctype html><html><head><title>Vehicles</title>
+      <script>var globalVars = ${JSON.stringify({
+        vmsApiUrl: `${base}/api/`,
+        inventoryId: '4211',
+        pluginsUrl: `${base}/wp-content/plugins`,
+        language: 'en',
+        useSearchModel: false,
+        hideZeroPriceVehicles: 'true',
+        inventoryTags: 'InventoryTagDemo',
+        inventoryTagsMethod: 'excl',
+        inventoryTagsSaleClass: 'new',
+        dealerGeneralName: 'Crosby Volkswagen'
+      })};</script></head>
+      <body><div id="srp"><pagination :page="currentPage"></pagination></div>${state.pageJsonLd || ''}</body></html>`);
+  });
+}
+
 let siteState;
 let server;
 let scrape;
@@ -192,6 +295,67 @@ async function main() {
     }
   });
 
+  // ---- the inventory-system route ----
+  const convState = { port: 0, fleet: makeFleet(), proxyHits: 0, brokenProxy: false, pageJsonLd: '' };
+  const convServer = convertusSite(convState);
+  await new Promise((resolve) => convServer.listen(0, '127.0.0.1', resolve));
+  convState.port = convServer.address().port;
+  const convListing = `http://127.0.0.1:${convState.port}/vehicles/?sc=used&in_stock=true&view=grid`;
+
+  let apiRun;
+  check('reads the whole lot from the inventory system, not the page', async () => {
+    convState.proxyHits = 0;
+    apiRun = await scrape.runScrape({ url: convListing, baseline: true, log: quiet });
+    assert.equal(apiRun.inventory.source, 'inventory-api');
+    assert.equal(apiRun.inventory.counts.printable, 40, 'expected all 40 vehicles');
+  });
+
+  check('splits the request when the answer is cut off at 30', async () => {
+    assert.ok(convState.proxyHits > 1, 'should have made more than one request');
+    assert.equal(apiRun.inventory.apiTotal, 40);
+    assert.equal(apiRun.inventory.apiWarning, null, 'nothing should be reported missing');
+  });
+
+  check('maps the API fields onto the label', async () => {
+    const vehicle = apiRun.inventory.vehicles.find((v) => v.stock === 'ST0001');
+    assert.ok(vehicle, 'ST0001 missing');
+    assert.equal(vehicle.make, 'Volkswagen');
+    assert.equal(vehicle.model, 'Atlas Cross Sport');
+    assert.equal(vehicle.trim, 'Highline', 'should prefer the short trim over "Sedan Highline"');
+    assert.equal(vehicle.vin, 'VIN00000000000001');
+    assert.equal(vehicle.odometer, '10137');
+    assert.ok(vehicle.url.includes('/vehicles/'), 'should carry the vehicle page link');
+  });
+
+  check('says so when the inventory system hands back less than it claims', async () => {
+    const shortState = { ...convState, fleet: convState.fleet };
+    assert.ok(shortState.fleet.length === 40);
+    // A lot with one make and no usable facets cannot be split past the cap.
+    const flat = convState.fleet.map((v) => ({ ...v, make: 'Volkswagen', body_style: 'SUV', year: 2020, exterior_color: 'White' }));
+    const previous = convState.fleet;
+    convState.fleet = flat;
+    const run = await scrape.runScrape({ url: convListing, baseline: true, log: quiet });
+    convState.fleet = previous;
+    assert.equal(run.inventory.counts.printable, PAGE_CAP);
+    assert.ok(run.inventory.apiWarning, 'a shortfall should be reported, not hidden');
+  });
+
+  check('falls back to reading the page when the inventory system refuses', async () => {
+    convState.brokenProxy = true;
+    convState.pageJsonLd = `<script type="application/ld+json">${JSON.stringify({
+      '@context': 'https://schema.org', '@type': 'Vehicle', name: '2021 Volkswagen Jetta Comfortline',
+      url: `http://127.0.0.1:${convState.port}/vehicles/jetta/1/`, sku: 'FB0001',
+      vehicleIdentificationNumber: '3VWC57BU8MM012345', brand: { name: 'Volkswagen' },
+      model: 'Jetta', vehicleConfiguration: 'Comfortline', modelDate: '2021'
+    })}</script>`;
+    const run = await scrape.runScrape({ url: convListing, baseline: true, log: quiet });
+    convState.brokenProxy = false;
+    convState.pageJsonLd = '';
+    assert.equal(run.inventory.source, 'page');
+    assert.equal(run.inventory.counts.printable, 1);
+    assert.equal(run.inventory.vehicles[0].stock, 'FB0001');
+  });
+
   let passed = 0;
   for (const { label, fn } of checks) {
     try {
@@ -205,6 +369,7 @@ async function main() {
   }
 
   server.close();
+  convServer.close();
   fs.rmSync(scratch, { recursive: true, force: true });
   console.log(`\n${passed}/${checks.length} checks passed`);
   process.exitCode = passed === checks.length ? 0 : 1;

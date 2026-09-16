@@ -15,6 +15,7 @@ import { fetchHtml, sleep } from './lib/fetcher.mjs';
 import { extractVehicles, extractFromEmbeddedJson, extractFromJsonLd, findMaxPage } from './lib/extract.mjs';
 import { mergeVehicle, isPrintable, vehicleKey } from './lib/vehicles.mjs';
 import { loadState, reconcile, saveState } from './lib/state.mjs';
+import { fetchInventory } from './lib/convertus.mjs';
 import { stripTags } from './lib/html.mjs';
 
 export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -127,8 +128,40 @@ export async function runScrape(options = {}) {
   const pagesFetched = [];
   let firstPageHtml = '';
   let maxPages = Math.max(1, Number(config.maxPages) || 1);
+  let source = 'page';
+  let apiTotal = null;
+  let apiUrl = '';
+  let apiWarning = null;
 
-  for (let page = 1; page <= maxPages; page += 1) {
+  // Preferred route: ask the system the website's own vehicle grid asks. The
+  // listing page itself is rendered in the browser and carries no vehicles.
+  if (config.useInventoryApi !== false) {
+    try {
+      log('Reading the inventory the website\'s vehicle grid uses...');
+      const api = await fetchInventory(listingUrl, {
+        log,
+        delayMs: config.requestDelayMs,
+        timeoutMs: config.requestTimeoutMs
+      });
+      if (api.vehicles.length) {
+        source = 'inventory-api';
+        apiTotal = api.claimedTotal;
+        apiUrl = api.apiUrl;
+        for (const vehicle of api.vehicles) collected.set(vehicle.key, vehicle);
+        log(`Read ${api.vehicles.length} vehicle(s) in ${api.requests} request(s)`);
+        if (!api.complete) {
+          apiWarning = `Only ${api.vehicles.length} of the ${api.claimedTotal} vehicles the site reports could be collected`;
+          log(`  ! ${apiWarning}`);
+        }
+      } else {
+        log('  the inventory system returned nothing; reading the page instead');
+      }
+    } catch (error) {
+      log(`  inventory system unavailable (${error.message}); reading the page instead`);
+    }
+  }
+
+  for (let page = 1; source === 'page' && page <= maxPages; page += 1) {
     const url = pageUrl(listingUrl, page);
     log(`Fetching page ${page}: ${url}`);
     const { html, finalUrl } = await fetchHtml(url, { timeoutMs: config.requestTimeoutMs });
@@ -166,7 +199,7 @@ export async function runScrape(options = {}) {
 
   let vehicles = [...collected.values()];
 
-  if (config.enrichFromVdp && vehicles.length) {
+  if (source === 'page' && config.enrichFromVdp && vehicles.length) {
     const cache = readJson(PATHS.vdpCache, {});
     const needsDetail = vehicles.filter((vehicle) => vehicle.url && !isPrintable(vehicle));
     const budget = needsDetail.slice(0, Math.max(0, Number(config.maxVdpFetches) || 0));
@@ -209,10 +242,15 @@ export async function runScrape(options = {}) {
     fetchedAt: new Date().toISOString(),
     listingUrl,
     pagesFetched,
+    source,
+    apiUrl,
+    apiTotal,
+    apiWarning,
     strategies: Object.fromEntries(strategyTally),
     config: {
       dealerName: config.dealerName,
       listingUrl,
+      apiUrl,
       qrTracking: config.qrTracking || {}
     },
     counts: {
@@ -226,7 +264,7 @@ export async function runScrape(options = {}) {
   };
   writeJson(PATHS.inventory, inventory);
 
-  if (!vehicles.length) {
+  if (!vehicles.length && firstPageHtml) {
     const file = saveDebug('listing-page-1.html', firstPageHtml);
     log('');
     log('No vehicles could be read from the listing page.');
@@ -257,7 +295,9 @@ if (invokedDirectly) {
         return;
       }
       console.log('');
+      console.log(`Read via                 : ${inventory.source === 'inventory-api' ? 'the website\'s inventory system' : 'reading the listing page'}`);
       console.log(`Vehicles on the used lot : ${inventory.counts.printable}`);
+      if (inventory.apiWarning) console.log(`! ${inventory.apiWarning}`);
       if (inventory.counts.incomplete) console.log(`Skipped (missing details): ${inventory.counts.incomplete}`);
       if (outcome.wasBaseline) {
         console.log('First run - everything found was recorded as "already on the lot". Nothing is queued to print.');
