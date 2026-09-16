@@ -49,12 +49,16 @@ page. You open that page in any browser, tick the new vehicles, and print.
 | Label a vehicle not on the website yet | **Manual label** |
 | Drop a vehicle without printing | Tick it → **Skip selected** |
 | QR colours/shape, paper size, cut guide | **Label & printing options** |
+| Move the label up or down the page | **Label & printing options** → *Move the label down the page* |
 | Pull the newest list right now | **Reload latest inventory**, top right |
 
 ### Print dialog settings that matter
 
 **Margins: Default**, **Scale: 100%** (not "Fit to page"), and **Background graphics: on** so the
 QR prints solid. Chrome and Edge remember this after the first time.
+
+If the label sits too high or low for your stock, adjust *Move the label down the page* under
+**Label & printing options** — it shifts the printout only, in millimetres.
 
 ### Two things to know about the published page
 
