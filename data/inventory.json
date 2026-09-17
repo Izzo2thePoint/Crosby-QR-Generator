@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-09-17T01:34:03.240Z",
+  "fetchedAt": "2026-09-17T16:46:05.848Z",
   "listingUrl": "https://www.crosbyvw.com/vehicles/?sc=used&in_transit=true&in_stock=true&on_order=true&view=grid",
   "pagesFetched": [],
   "source": "inventory-api",
@@ -21,7 +21,7 @@
     "found": 40,
     "printable": 40,
     "incomplete": 0,
-    "newThisRun": 0
+    "newThisRun": 1
   },
   "vehicles": [
     {
@@ -400,6 +400,33 @@
       "title": "2024 Volkswagen Jetta GLI",
       "key": "STK:1V3502",
       "firstSeen": "2026-09-16T20:04:20.381Z",
+      "origin": "new"
+    },
+    {
+      "year": "2024",
+      "make": "Volkswagen",
+      "model": "Taos",
+      "trim": "Comfortline 1.5T 8sp w/ Tip FWD",
+      "stock": "1V8244",
+      "vin": "3VVEX7B25RM008244",
+      "url": "https://www.crosbyvw.com/vehicles/2024/Volkswagen/Taos/Kitchener/ON/71321975/?sale_class=Used",
+      "price": "23995",
+      "odometer": "47881",
+      "image": {
+        "image_original": "https://prod.pictures.autoscout24.net/listing-images/3bbbbb3a-62f2-4f3d-b117-0b8976eb57cc_2013a344-aa7d-4ded-ae36-16fb24f2e479.jpg",
+        "image_lg": "https://prod.pictures.autoscout24.net/listing-images/3bbbbb3a-62f2-4f3d-b117-0b8976eb57cc_2013a344-aa7d-4ded-ae36-16fb24f2e479.jpg/1024x786.webp",
+        "image_md": "https://prod.pictures.autoscout24.net/listing-images/3bbbbb3a-62f2-4f3d-b117-0b8976eb57cc_2013a344-aa7d-4ded-ae36-16fb24f2e479.jpg/420x315.webp",
+        "image_sm": "https://prod.pictures.autoscout24.net/listing-images/3bbbbb3a-62f2-4f3d-b117-0b8976eb57cc_2013a344-aa7d-4ded-ae36-16fb24f2e479.jpg/180x135.webp",
+        "image_xs": "https://prod.pictures.autoscout24.net/listing-images/3bbbbb3a-62f2-4f3d-b117-0b8976eb57cc_2013a344-aa7d-4ded-ae36-16fb24f2e479.jpg/133x100.webp"
+      },
+      "condition": "used",
+      "certified": true,
+      "daysOnLot": 0,
+      "inTransit": false,
+      "onOrder": false,
+      "title": "2024 Volkswagen Taos",
+      "key": "STK:1V8244",
+      "firstSeen": "2026-09-17T16:46:05.847Z",
       "origin": "new"
     },
     {
@@ -872,11 +899,11 @@
       "price": "23495",
       "odometer": "110356",
       "image": {
-        "image_original": "https://prod.pictures.autoscout24.net/listing-images/55d59b00-5de8-4150-85e3-343955bdf6b3_306d93ec-2774-43e6-beae-a77223e6660d.jpg",
-        "image_lg": "https://prod.pictures.autoscout24.net/listing-images/55d59b00-5de8-4150-85e3-343955bdf6b3_306d93ec-2774-43e6-beae-a77223e6660d.jpg/1024x786.webp",
-        "image_md": "https://prod.pictures.autoscout24.net/listing-images/55d59b00-5de8-4150-85e3-343955bdf6b3_306d93ec-2774-43e6-beae-a77223e6660d.jpg/420x315.webp",
-        "image_sm": "https://prod.pictures.autoscout24.net/listing-images/55d59b00-5de8-4150-85e3-343955bdf6b3_306d93ec-2774-43e6-beae-a77223e6660d.jpg/180x135.webp",
-        "image_xs": "https://prod.pictures.autoscout24.net/listing-images/55d59b00-5de8-4150-85e3-343955bdf6b3_306d93ec-2774-43e6-beae-a77223e6660d.jpg/133x100.webp"
+        "image_original": "https://prod.pictures.autoscout24.net/listing-images/55d59b00-5de8-4150-85e3-343955bdf6b3_1ad12afb-20a8-4156-9003-9ec21f5fa3a1.jpg",
+        "image_lg": "https://prod.pictures.autoscout24.net/listing-images/55d59b00-5de8-4150-85e3-343955bdf6b3_1ad12afb-20a8-4156-9003-9ec21f5fa3a1.jpg/1024x786.webp",
+        "image_md": "https://prod.pictures.autoscout24.net/listing-images/55d59b00-5de8-4150-85e3-343955bdf6b3_1ad12afb-20a8-4156-9003-9ec21f5fa3a1.jpg/420x315.webp",
+        "image_sm": "https://prod.pictures.autoscout24.net/listing-images/55d59b00-5de8-4150-85e3-343955bdf6b3_1ad12afb-20a8-4156-9003-9ec21f5fa3a1.jpg/180x135.webp",
+        "image_xs": "https://prod.pictures.autoscout24.net/listing-images/55d59b00-5de8-4150-85e3-343955bdf6b3_1ad12afb-20a8-4156-9003-9ec21f5fa3a1.jpg/133x100.webp"
       },
       "condition": "used",
       "certified": false,
@@ -1041,33 +1068,6 @@
       "onOrder": false,
       "title": "2012 Volkswagen Jetta Sedan",
       "key": "STK:1V4690",
-      "firstSeen": "2026-09-16T20:04:20.381Z",
-      "origin": "new"
-    },
-    {
-      "year": "2010",
-      "make": "Chevrolet",
-      "model": "Impala",
-      "trim": "LTZ",
-      "stock": "1D2030",
-      "vin": "2G1WC5EM9A1152030",
-      "url": "https://www.crosbyvw.com/vehicles/2010/Chevrolet/Impala/Kitchener/ON/71259852/?sale_class=Used",
-      "price": "2500",
-      "odometer": "170500",
-      "image": {
-        "image_original": "https://prod.pictures.autoscout24.net/listing-images/8923085c-8458-4017-907e-1f18dfe7f840_fe72a73d-5294-4a2e-a944-7ab576b55974.jpg",
-        "image_lg": "https://prod.pictures.autoscout24.net/listing-images/8923085c-8458-4017-907e-1f18dfe7f840_fe72a73d-5294-4a2e-a944-7ab576b55974.jpg/1024x786.webp",
-        "image_md": "https://prod.pictures.autoscout24.net/listing-images/8923085c-8458-4017-907e-1f18dfe7f840_fe72a73d-5294-4a2e-a944-7ab576b55974.jpg/420x315.webp",
-        "image_sm": "https://prod.pictures.autoscout24.net/listing-images/8923085c-8458-4017-907e-1f18dfe7f840_fe72a73d-5294-4a2e-a944-7ab576b55974.jpg/180x135.webp",
-        "image_xs": "https://prod.pictures.autoscout24.net/listing-images/8923085c-8458-4017-907e-1f18dfe7f840_fe72a73d-5294-4a2e-a944-7ab576b55974.jpg/133x100.webp"
-      },
-      "condition": "used",
-      "certified": false,
-      "daysOnLot": 7,
-      "inTransit": false,
-      "onOrder": false,
-      "title": "2010 Chevrolet Impala",
-      "key": "STK:1D2030",
       "firstSeen": "2026-09-16T20:04:20.381Z",
       "origin": "new"
     },
