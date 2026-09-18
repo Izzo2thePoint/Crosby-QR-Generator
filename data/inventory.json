@@ -1,10 +1,10 @@
 {
-  "fetchedAt": "2026-09-18T00:02:29.074Z",
+  "fetchedAt": "2026-09-18T16:14:50.143Z",
   "listingUrl": "https://www.crosbyvw.com/vehicles/?sc=used&in_transit=true&in_stock=true&on_order=true&view=grid",
   "pagesFetched": [],
   "source": "inventory-api",
   "apiUrl": "https://www.crosbyvw.com/wp-content/plugins/convertus-vms/include/php/ajax-vehicles.php?endpoint=https%3A%2F%2Fvms.prod.convertus.rocks%2Fapi%2Ffiltering%2F%3Fcp%3D4211%26ln%3Den%26sc%3Dused%26in_transit%3Dtrue%26in_stock%3Dtrue%26on_order%3Dtrue%26hzpv%3Dtrue%26tg%3DInventoryTagDemo%26tgm%3Dexcl%26tgsc%3Dnew&action=vms_data",
-  "apiTotal": 40,
+  "apiTotal": 37,
   "apiWarning": null,
   "strategies": {},
   "config": {
@@ -18,8 +18,8 @@
     }
   },
   "counts": {
-    "found": 40,
-    "printable": 40,
+    "found": 37,
+    "printable": 37,
     "incomplete": 0,
     "newThisRun": 0
   },
@@ -539,33 +539,6 @@
     },
     {
       "year": "2023",
-      "make": "Mazda",
-      "model": "CX-5",
-      "trim": "GT",
-      "stock": "2D6976",
-      "vin": "JM3KFBDM6P0236976",
-      "url": "https://www.crosbyvw.com/vehicles/2023/Mazda/CX-5/Kitchener/ON/69913559/?sale_class=Used",
-      "price": "26995",
-      "odometer": "94532",
-      "image": {
-        "image_original": "https://prod.pictures.autoscout24.net/listing-images/9b4c274a-ce62-4375-9e9d-5e649e44d0ca_e494daa4-733c-4265-a182-599817d21807.jpg",
-        "image_lg": "https://prod.pictures.autoscout24.net/listing-images/9b4c274a-ce62-4375-9e9d-5e649e44d0ca_e494daa4-733c-4265-a182-599817d21807.jpg/1024x786.webp",
-        "image_md": "https://prod.pictures.autoscout24.net/listing-images/9b4c274a-ce62-4375-9e9d-5e649e44d0ca_e494daa4-733c-4265-a182-599817d21807.jpg/420x315.webp",
-        "image_sm": "https://prod.pictures.autoscout24.net/listing-images/9b4c274a-ce62-4375-9e9d-5e649e44d0ca_e494daa4-733c-4265-a182-599817d21807.jpg/180x135.webp",
-        "image_xs": "https://prod.pictures.autoscout24.net/listing-images/9b4c274a-ce62-4375-9e9d-5e649e44d0ca_e494daa4-733c-4265-a182-599817d21807.jpg/133x100.webp"
-      },
-      "condition": "used",
-      "certified": false,
-      "daysOnLot": 154,
-      "inTransit": false,
-      "onOrder": false,
-      "title": "2023 Mazda CX-5",
-      "key": "STK:2D6976",
-      "firstSeen": "2026-09-16T20:04:20.381Z",
-      "origin": "new"
-    },
-    {
-      "year": "2023",
       "make": "Volkswagen",
       "model": "Golf GTI",
       "trim": "Performance 7sp at DSG w/Tip",
@@ -642,33 +615,6 @@
       "onOrder": false,
       "title": "2022 Hyundai Santa Fe",
       "key": "STK:1D2231",
-      "firstSeen": "2026-09-16T20:04:20.381Z",
-      "origin": "new"
-    },
-    {
-      "year": "2022",
-      "make": "Toyota",
-      "model": "Corolla Hatchback",
-      "trim": "XSE CVT",
-      "stock": "1D2098",
-      "vin": "JTNK4MBE8N3162098",
-      "url": "https://www.crosbyvw.com/vehicles/2022/Toyota/Corolla%20Hatchback/Kitchener/ON/71259850/?sale_class=Used",
-      "price": "21495",
-      "odometer": "116000",
-      "image": {
-        "image_original": "https://prod.pictures.autoscout24.net/listing-images/38b4f002-e648-4432-b666-bfbbb97528ed_66bc72f8-1a39-4fe7-9d2d-ffa67be07d52.jpg",
-        "image_lg": "https://prod.pictures.autoscout24.net/listing-images/38b4f002-e648-4432-b666-bfbbb97528ed_66bc72f8-1a39-4fe7-9d2d-ffa67be07d52.jpg/1024x786.webp",
-        "image_md": "https://prod.pictures.autoscout24.net/listing-images/38b4f002-e648-4432-b666-bfbbb97528ed_66bc72f8-1a39-4fe7-9d2d-ffa67be07d52.jpg/420x315.webp",
-        "image_sm": "https://prod.pictures.autoscout24.net/listing-images/38b4f002-e648-4432-b666-bfbbb97528ed_66bc72f8-1a39-4fe7-9d2d-ffa67be07d52.jpg/180x135.webp",
-        "image_xs": "https://prod.pictures.autoscout24.net/listing-images/38b4f002-e648-4432-b666-bfbbb97528ed_66bc72f8-1a39-4fe7-9d2d-ffa67be07d52.jpg/133x100.webp"
-      },
-      "condition": "used",
-      "certified": false,
-      "daysOnLot": 8,
-      "inTransit": false,
-      "onOrder": false,
-      "title": "2022 Toyota Corolla Hatchback",
-      "key": "STK:1D2098",
       "firstSeen": "2026-09-16T20:04:20.381Z",
       "origin": "new"
     },
@@ -939,33 +885,6 @@
       "onOrder": false,
       "title": "2018 Kia Sportage",
       "key": "STK:1D6557",
-      "firstSeen": "2026-09-16T20:04:20.381Z",
-      "origin": "new"
-    },
-    {
-      "year": "2017",
-      "make": "Jeep",
-      "model": "Cherokee",
-      "trim": "Limited",
-      "stock": "1D040Z",
-      "vin": "1C4PJMDS7HD215040",
-      "url": "https://www.crosbyvw.com/vehicles/2017/Jeep/Cherokee/Kitchener/ON/70964115/?sale_class=Used",
-      "price": "12495",
-      "odometer": "175000",
-      "image": {
-        "image_original": "https://prod.pictures.autoscout24.net/listing-images/814bf070-46d6-458a-9853-32c5b50fe7a0_f9ad4219-608e-4fcb-bfff-1877a4bc1ca9.jpg",
-        "image_lg": "https://prod.pictures.autoscout24.net/listing-images/814bf070-46d6-458a-9853-32c5b50fe7a0_f9ad4219-608e-4fcb-bfff-1877a4bc1ca9.jpg/1024x786.webp",
-        "image_md": "https://prod.pictures.autoscout24.net/listing-images/814bf070-46d6-458a-9853-32c5b50fe7a0_f9ad4219-608e-4fcb-bfff-1877a4bc1ca9.jpg/420x315.webp",
-        "image_sm": "https://prod.pictures.autoscout24.net/listing-images/814bf070-46d6-458a-9853-32c5b50fe7a0_f9ad4219-608e-4fcb-bfff-1877a4bc1ca9.jpg/180x135.webp",
-        "image_xs": "https://prod.pictures.autoscout24.net/listing-images/814bf070-46d6-458a-9853-32c5b50fe7a0_f9ad4219-608e-4fcb-bfff-1877a4bc1ca9.jpg/133x100.webp"
-      },
-      "condition": "used",
-      "certified": false,
-      "daysOnLot": 40,
-      "inTransit": false,
-      "onOrder": false,
-      "title": "2017 Jeep Cherokee",
-      "key": "STK:1D040Z",
       "firstSeen": "2026-09-16T20:04:20.381Z",
       "origin": "new"
     },
