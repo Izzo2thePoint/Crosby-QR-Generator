@@ -132,14 +132,26 @@ function convertusSite(state) {
     const base = `http://127.0.0.1:${state.port}`;
     const url = new URL(req.url, base);
 
-    if (url.pathname === '/wp-content/plugins/convertus-vms/include/php/ajax-vehicles.php') {
+    // Refusals, the way the real site's bot protection refuses.
+    if (state.refuseCount > 0) {
+      state.refuseCount -= 1;
+      res.writeHead(403, { 'Content-Type': 'text/html' });
+      res.end('<html><body>Forbidden</body></html>');
+      return;
+    }
+    if (state.refusePage && !url.pathname.includes('ajax-vehicles') && !url.pathname.startsWith('/api/')) {
+      res.writeHead(403, { 'Content-Type': 'text/html' });
+      res.end('<html><body>Forbidden</body></html>');
+      return;
+    }
+    if (url.pathname.startsWith('/api/') || url.pathname === '/wp-content/plugins/convertus-vms/include/php/ajax-vehicles.php') {
       state.proxyHits += 1;
       if (state.brokenProxy) {
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ success: false, msg: 'Requested endpoint is invalid.' }));
         return;
       }
-      const endpoint = new URL(url.searchParams.get('endpoint'));
+      const endpoint = url.searchParams.get('endpoint') ? new URL(url.searchParams.get('endpoint')) : url;
       const filters = endpoint.searchParams;
       let matched = state.fleet.filter((v) => (filters.get('sc') || 'used').toLowerCase() === v.sale_class.toLowerCase());
       if (filters.get('mk')) matched = matched.filter((v) => v.make === filters.get('mk'));
@@ -296,7 +308,7 @@ async function main() {
   });
 
   // ---- the inventory-system route ----
-  const convState = { port: 0, fleet: makeFleet(), proxyHits: 0, brokenProxy: false, pageJsonLd: '' };
+  const convState = { port: 0, fleet: makeFleet(), proxyHits: 0, brokenProxy: false, pageJsonLd: '', refusePage: false, refuseCount: 0 };
   const convServer = convertusSite(convState);
   await new Promise((resolve) => convServer.listen(0, '127.0.0.1', resolve));
   convState.port = convServer.address().port;
@@ -348,6 +360,47 @@ async function main() {
     convState.fleet = previous;
     assert.equal(run.inventory.counts.printable, PAGE_CAP);
     assert.ok(run.inventory.apiWarning, 'a shortfall should be reported, not hidden');
+  });
+
+  check('reads the inventory even when the page is refused', async () => {
+    // The settings the page would have given us, kept from the last good read.
+    fs.writeFileSync(scrape.PATHS.siteConfig, JSON.stringify({
+      vmsApiUrl: `http://127.0.0.1:${convState.port}/api/`,
+      inventoryId: '4211',
+      pluginsUrl: `http://127.0.0.1:${convState.port}/wp-content/plugins`,
+      language: 'en',
+      hideZeroPriceVehicles: 'true',
+      inventoryTags: 'InventoryTagDemo',
+      inventoryTagsMethod: 'excl',
+      inventoryTagsSaleClass: 'new'
+    }));
+    convState.refusePage = true;
+    const run = await scrape.runScrape({ url: convListing, baseline: true, log: quiet });
+    convState.refusePage = false;
+    assert.equal(run.inventory.source, 'inventory-api');
+    assert.equal(run.inventory.counts.printable, 40, 'the whole lot should still be read');
+  });
+
+  check('a refusal that clears is retried rather than fatal', async () => {
+    fs.rmSync(scrape.PATHS.siteConfig, { force: true });
+    convState.refuseCount = 1;            // the first request only
+    const run = await scrape.runScrape({ url: convListing, baseline: true, log: quiet });
+    assert.equal(convState.refuseCount, 0, 'the refusal should have been consumed');
+    assert.equal(run.inventory.counts.printable, 40, 'the retry should have succeeded');
+  });
+
+  check('remembers the settings after reading the page', async () => {
+    const saved = JSON.parse(fs.readFileSync(scrape.PATHS.siteConfig, 'utf8'));
+    assert.equal(saved.inventoryId, '4211');
+    assert.ok(saved.vmsApiUrl, 'the api address should be kept for next time');
+    assert.ok(saved.savedAt, 'and stamped');
+  });
+
+  check('leaves the remembered settings alone when nothing has changed', async () => {
+    const before = fs.readFileSync(scrape.PATHS.siteConfig, 'utf8');
+    await scrape.runScrape({ url: convListing, baseline: true, log: quiet });
+    assert.equal(fs.readFileSync(scrape.PATHS.siteConfig, 'utf8'), before,
+      'an unchanged settings file should not be rewritten on every run');
   });
 
   check('falls back to reading the page when the inventory system refuses', async () => {

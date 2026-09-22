@@ -30,6 +30,7 @@ export const PATHS = {
   inventory: path.join(DATA_DIR, 'inventory.json'),
   state: path.join(DATA_DIR, 'state.json'),
   vdpCache: path.join(DATA_DIR, 'vdp-cache.json'),
+  siteConfig: path.join(DATA_DIR, 'site-config.json'),
   debug: path.join(DATA_DIR, 'debug')
 };
 
@@ -141,14 +142,26 @@ export async function runScrape(options = {}) {
       const api = await fetchInventory(listingUrl, {
         log,
         delayMs: config.requestDelayMs,
-        timeoutMs: config.requestTimeoutMs
+        timeoutMs: config.requestTimeoutMs,
+        remembered: readJson(PATHS.siteConfig, null) || config.inventorySystem || null
       });
+      // Keep the settings for next time: the site sometimes refuses the page,
+      // and these are all the inventory system needs.
+      // Only rewritten when they actually differ, so an unchanged file does not
+      // produce a commit on every run.
+      if (api.settings) {
+        const { savedAt, ...previous } = readJson(PATHS.siteConfig, null) || {};
+        if (JSON.stringify(previous) !== JSON.stringify(api.settings)) {
+          writeJson(PATHS.siteConfig, { savedAt: new Date().toISOString(), ...api.settings });
+        }
+      }
       if (api.vehicles.length) {
         source = 'inventory-api';
         apiTotal = api.claimedTotal;
         apiUrl = api.apiUrl;
         for (const vehicle of api.vehicles) collected.set(vehicle.key, vehicle);
-        log(`Read ${api.vehicles.length} vehicle(s) in ${api.requests} request(s)`);
+        log(`Read ${api.vehicles.length} vehicle(s) in ${api.requests} request(s)` +
+          (api.settingsFrom === 'remembered' ? ' using remembered settings' : ''));
         if (!api.complete) {
           apiWarning = `Only ${api.vehicles.length} of the ${api.claimedTotal} vehicles the site reports could be collected`;
           log(`  ! ${apiWarning}`);

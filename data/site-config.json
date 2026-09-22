@@ -1,0 +1,12 @@
+{
+  "savedAt": "2026-09-22T13:05:46.012Z",
+  "vmsApiUrl": "https://vms.prod.convertus.rocks/api/",
+  "inventoryId": "4211",
+  "pluginsUrl": "https://www.crosbyvw.com/wp-content/plugins",
+  "language": "en",
+  "useSearchModel": "",
+  "hideZeroPriceVehicles": "true",
+  "inventoryTags": "InventoryTagDemo",
+  "inventoryTagsMethod": "excl",
+  "inventoryTagsSaleClass": "new"
+}

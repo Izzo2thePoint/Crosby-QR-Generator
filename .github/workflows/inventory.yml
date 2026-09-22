@@ -50,7 +50,9 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -f data/inventory.json data/state.json 2>/dev/null || true
+          for f in data/inventory.json data/state.json data/site-config.json; do
+            if [ -f "$f" ]; then git add -f "$f"; fi
+          done
           if git diff --staged --quiet; then
             echo "Inventory unchanged"
           else
@@ -77,6 +79,12 @@ jobs:
       - uses: actions/upload-pages-artifact@v3
         with:
           path: _site
+
+      - name: Fail the run if the inventory could not be read
+        if: steps.scrape.outcome != 'success'
+        run: |
+          echo "The published page is still being served, but its list is no longer current." >> "$GITHUB_STEP_SUMMARY"
+          exit 1
 
   deploy:
     needs: refresh
