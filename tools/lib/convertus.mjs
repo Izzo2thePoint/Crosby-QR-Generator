@@ -13,10 +13,22 @@
 // we split that request along a facet and merge - checking the result against
 // the API's own total so a missed vehicle cannot pass silently.
 
-import { fetchHtml, sleep } from './fetcher.mjs';
+import { fetchHtml, sleep, BROWSER_HEADERS } from './fetcher.mjs';
 import { vehicleKey } from './vehicles.mjs';
 
 const REQUIRED = ['vmsApiUrl', 'inventoryId', 'pluginsUrl'];
+// What the page tells us, and all the API needs. Remembered between runs so a
+// refused page does not stop the inventory being read.
+export const REMEMBERED_FIELDS = ['vmsApiUrl', 'inventoryId', 'pluginsUrl', 'language',
+  'useSearchModel', 'hideZeroPriceVehicles', 'inventoryTags', 'inventoryTagsMethod', 'inventoryTagsSaleClass'];
+
+export function rememberable(gv) {
+  const kept = {};
+  for (const field of REMEMBERED_FIELDS) {
+    if (gv[field] !== undefined && gv[field] !== null) kept[field] = gv[field];
+  }
+  return kept;
+}
 const FACET_ORDER = ['mk', 'bs', 'yr', 'ec', 'tm'];
 const PROXY_PATH = '/convertus-vms/include/php/ajax-vehicles.php';
 
@@ -62,18 +74,19 @@ export function proxyUrl(gv, filters) {
   return `${gv.pluginsUrl}${PROXY_PATH}?endpoint=${encodeURIComponent(buildApiQuery(gv, filters))}&action=vms_data`;
 }
 
-async function request(gv, filters, { listingUrl, timeoutMs }) {
-  const response = await fetch(proxyUrl(gv, filters), {
-    signal: AbortSignal.timeout(timeoutMs),
-    headers: {
-      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36 CrosbyLabelStudio/1.0',
-      Accept: 'application/json, text/plain, */*',
-      Referer: listingUrl,
-      'X-Requested-With': 'XMLHttpRequest'
-    }
-  });
-  if (!response.ok) throw new Error(`Inventory request failed: HTTP ${response.status}`);
-  const body = await response.text();
+function apiHeaders(listingUrl) {
+  return {
+    ...BROWSER_HEADERS,
+    Accept: 'application/json, text/plain, */*',
+    Referer: listingUrl,
+    'X-Requested-With': 'XMLHttpRequest',
+    'Sec-Fetch-Dest': 'empty',
+    'Sec-Fetch-Mode': 'cors',
+    'Sec-Fetch-Site': 'same-origin'
+  };
+}
+
+function parsePayload(body) {
   let payload;
   try {
     payload = JSON.parse(body);
@@ -82,6 +95,39 @@ async function request(gv, filters, { listingUrl, timeoutMs }) {
   }
   if (payload && payload.success === false) throw new Error(payload.msg || 'Inventory request refused');
   return payload;
+}
+
+/**
+ * Asks the way the website's own grid asks - through the proxy on the
+ * dealership domain - and, if that is refused, asks the inventory system
+ * itself. The two are the same data; only the doorway differs, which matters
+ * when the dealership domain is the thing refusing.
+ */
+async function request(gv, filters, context) {
+  const { listingUrl, timeoutMs } = context;
+  const endpoint = buildApiQuery(gv, filters);
+  const doors = [];
+  if (gv.pluginsUrl) {
+    doors.push({ name: 'proxy', url: `${gv.pluginsUrl}${PROXY_PATH}?endpoint=${encodeURIComponent(endpoint)}&action=vms_data` });
+  }
+  doors.push({ name: 'direct', url: endpoint });
+  if (context.preferred === 'direct') doors.reverse();
+
+  let lastError;
+  for (const door of doors) {
+    try {
+      const { html } = await fetchHtml(door.url, { timeoutMs, retries: 2, headers: apiHeaders(listingUrl) });
+      const payload = parsePayload(html);
+      if (context.preferred !== door.name) {
+        context.preferred = door.name;
+        if (door.name === 'direct') context.log('  the dealership domain refused; reading the inventory system directly');
+      }
+      return payload;
+    } catch (error) {
+      lastError = error;
+    }
+  }
+  throw lastError;
 }
 
 // Real records carry these where a trim is unknown; they must not reach a label.
@@ -131,18 +177,35 @@ export function toVehicle(record) {
  * truncates its answer. Returns what was gathered plus the total it claims.
  */
 export async function fetchInventory(listingUrl, options = {}) {
-  const { log = () => {}, delayMs = 250, timeoutMs = 30000, maxRequests = 80 } = options;
+  const { log = () => {}, delayMs = 250, timeoutMs = 30000, maxRequests = 80, remembered = null } = options;
 
-  const { html, finalUrl } = await fetchHtml(listingUrl, { timeoutMs });
-  const gv = readGlobalVars(html);
-  if (!gv) throw new Error('This page does not carry a Convertus inventory configuration');
+  let gv = null;
+  let filtersFrom = listingUrl;
+  let settingsFrom = 'page';
+
+  try {
+    const { html, finalUrl } = await fetchHtml(listingUrl, { timeoutMs });
+    gv = readGlobalVars(html);
+    if (gv) filtersFrom = finalUrl;
+    else log('  the page carries no inventory settings');
+  } catch (error) {
+    log(`  the page could not be read (${error.message})`);
+  }
+
+  if (!gv && remembered && remembered.vmsApiUrl && remembered.inventoryId) {
+    gv = { ...remembered };
+    settingsFrom = 'remembered';
+    log('  using the inventory settings remembered from the last successful read');
+  }
+  if (!gv) throw new Error('No inventory settings available - the page was refused and none are remembered');
 
   const baseFilters = {};
-  for (const [key, value] of new URL(finalUrl).searchParams) {
+  for (const [key, value] of new URL(filtersFrom).searchParams) {
     if (key !== 'view') baseFilters[key] = value;
   }
 
   const collected = new Map();
+  const context = { listingUrl, timeoutMs, log, preferred: null };
   let requests = 0;
   let claimedTotal = null;
 
@@ -151,7 +214,7 @@ export async function fetchInventory(listingUrl, options = {}) {
     if (requests > 0) await sleep(delayMs);
     requests += 1;
 
-    const payload = await request(gv, filters, { listingUrl: finalUrl, timeoutMs });
+    const payload = await request(gv, filters, context);
     const results = Array.isArray(payload.results) ? payload.results : [];
     const total = payload.summary && Number.isFinite(payload.summary.total_vehicles)
       ? payload.summary.total_vehicles
@@ -190,6 +253,8 @@ export async function fetchInventory(listingUrl, options = {}) {
     requests,
     complete: claimedTotal === null || vehicles.length >= claimedTotal,
     apiUrl: proxyUrl(gv, baseFilters),
-    dealer: gv.dealerGeneralName || ''
+    dealer: gv.dealerGeneralName || '',
+    settingsFrom,
+    settings: settingsFrom === 'page' ? rememberable(gv) : null
   };
 }

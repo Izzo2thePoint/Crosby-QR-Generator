@@ -3,6 +3,7 @@ data/*
 !data/.gitkeep
 !data/inventory.json
 !data/state.json
+!data/site-config.json
 *.log
 .DS_Store
 Thumbs.db
