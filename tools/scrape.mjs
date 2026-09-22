@@ -147,7 +147,14 @@ export async function runScrape(options = {}) {
       });
       // Keep the settings for next time: the site sometimes refuses the page,
       // and these are all the inventory system needs.
-      if (api.settings) writeJson(PATHS.siteConfig, { savedAt: new Date().toISOString(), ...api.settings });
+      // Only rewritten when they actually differ, so an unchanged file does not
+      // produce a commit on every run.
+      if (api.settings) {
+        const { savedAt, ...previous } = readJson(PATHS.siteConfig, null) || {};
+        if (JSON.stringify(previous) !== JSON.stringify(api.settings)) {
+          writeJson(PATHS.siteConfig, { savedAt: new Date().toISOString(), ...api.settings });
+        }
+      }
       if (api.vehicles.length) {
         source = 'inventory-api';
         apiTotal = api.claimedTotal;

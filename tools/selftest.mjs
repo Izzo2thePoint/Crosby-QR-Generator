@@ -396,6 +396,13 @@ async function main() {
     assert.ok(saved.savedAt, 'and stamped');
   });
 
+  check('leaves the remembered settings alone when nothing has changed', async () => {
+    const before = fs.readFileSync(scrape.PATHS.siteConfig, 'utf8');
+    await scrape.runScrape({ url: convListing, baseline: true, log: quiet });
+    assert.equal(fs.readFileSync(scrape.PATHS.siteConfig, 'utf8'), before,
+      'an unchanged settings file should not be rewritten on every run');
+  });
+
   check('falls back to reading the page when the inventory system refuses', async () => {
     convState.brokenProxy = true;
     convState.pageJsonLd = `<script type="application/ld+json">${JSON.stringify({
