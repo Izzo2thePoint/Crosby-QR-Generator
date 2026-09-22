@@ -47,3 +47,6 @@ jobs:
               ].join(' '));
             }
           "
+      - name: The settings it remembered
+        if: always()
+        run: cat data/site-config.json || echo "no settings were written"
