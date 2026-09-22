@@ -5,8 +5,14 @@ name: Refresh inventory and publish label page
 
 on:
   schedule:
-    # Every two hours through the working day (UTC; 12:00 UTC = 8am in Kitchener).
-    - cron: '0 12,14,16,18,20,22 * * *'
+    # Hourly through the working day (UTC; 12:00 UTC = 8am in Kitchener).
+    #
+    # GitHub runs scheduled workflows on a shared pool: it delays them under load
+    # and drops them outright when the load is high enough. On the top of the hour
+    # - where most schedules sit - this lot fired 2-4 times a day against a
+    # declared 6, between 8 and 125 minutes late. So: an odd minute, away from the
+    # crowd, and an hourly slot, so a dropped one costs an hour rather than a day.
+    - cron: '37 12-23 * * *'
   workflow_dispatch:
   push:
     branches: [main]
