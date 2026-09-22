@@ -18,7 +18,11 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
+      - name: Which routes to the inventory still work
+        if: always()
+        run: node tools/diagnose-access.mjs ${{ inputs.url }}
       - name: What the listing page contains
+        if: always()
         run: node tools/diagnose.mjs ${{ inputs.url }}
       - name: What the scraper reads, end to end
         if: always()
