@@ -1,10 +1,10 @@
 {
-  "fetchedAt": "2026-09-23T00:14:36.225Z",
+  "fetchedAt": "2026-09-23T16:40:36.613Z",
   "listingUrl": "https://www.crosbyvw.com/vehicles/?sc=used&in_transit=true&in_stock=true&on_order=true&view=grid",
   "pagesFetched": [],
   "source": "inventory-api",
   "apiUrl": "https://www.crosbyvw.com/wp-content/plugins/convertus-vms/include/php/ajax-vehicles.php?endpoint=https%3A%2F%2Fvms.prod.convertus.rocks%2Fapi%2Ffiltering%2F%3Fcp%3D4211%26ln%3Den%26sc%3Dused%26in_transit%3Dtrue%26in_stock%3Dtrue%26on_order%3Dtrue%26hzpv%3Dtrue%26tg%3DInventoryTagDemo%26tgm%3Dexcl%26tgsc%3Dnew&action=vms_data",
-  "apiTotal": 46,
+  "apiTotal": 44,
   "apiWarning": null,
   "strategies": {},
   "config": {
@@ -18,10 +18,10 @@
     }
   },
   "counts": {
-    "found": 46,
-    "printable": 46,
+    "found": 44,
+    "printable": 44,
     "incomplete": 0,
-    "newThisRun": 0
+    "newThisRun": 1
   },
   "vehicles": [
     {
@@ -379,7 +379,7 @@
       "year": "2024",
       "make": "Subaru",
       "model": "Ascent",
-      "trim": "Limited 7-Passenger",
+      "trim": "Limited",
       "stock": "1D1787",
       "vin": "4S4WMATD2R3431787",
       "url": "https://www.crosbyvw.com/vehicles/2024/Subaru/Ascent/Kitchener/ON/71362139/?sale_class=Used",
@@ -514,18 +514,18 @@
       "year": "2024",
       "make": "Volkswagen",
       "model": "Tiguan",
-      "trim": "Comfortline R-Line Black 2.0T 8sp at w/Tip 4M",
+      "trim": "Comfortline R-Line Black Edition",
       "stock": "1V0825",
       "vin": "3VV8B7AX3RM120825",
       "url": "https://www.crosbyvw.com/vehicles/2024/Volkswagen/Tiguan/Kitchener/ON/71362137/?sale_class=Used",
       "price": "31495",
       "odometer": "42500",
       "image": {
-        "image_original": "https://prod.pictures.autoscout24.net/listing-images/ba81f3c6-33db-4479-87b6-516a7a0017b6_0b9ef5b8-e92e-416c-98e5-c46391ef0acb.jpg",
-        "image_lg": "https://prod.pictures.autoscout24.net/listing-images/ba81f3c6-33db-4479-87b6-516a7a0017b6_0b9ef5b8-e92e-416c-98e5-c46391ef0acb.jpg/1024x786.webp",
-        "image_md": "https://prod.pictures.autoscout24.net/listing-images/ba81f3c6-33db-4479-87b6-516a7a0017b6_0b9ef5b8-e92e-416c-98e5-c46391ef0acb.jpg/420x315.webp",
-        "image_sm": "https://prod.pictures.autoscout24.net/listing-images/ba81f3c6-33db-4479-87b6-516a7a0017b6_0b9ef5b8-e92e-416c-98e5-c46391ef0acb.jpg/180x135.webp",
-        "image_xs": "https://prod.pictures.autoscout24.net/listing-images/ba81f3c6-33db-4479-87b6-516a7a0017b6_0b9ef5b8-e92e-416c-98e5-c46391ef0acb.jpg/133x100.webp"
+        "image_original": "https://prod.pictures.autoscout24.net/listing-images/ba81f3c6-33db-4479-87b6-516a7a0017b6_48e11709-084b-43c2-8365-4af8b47c31bc.jpg",
+        "image_lg": "https://prod.pictures.autoscout24.net/listing-images/ba81f3c6-33db-4479-87b6-516a7a0017b6_48e11709-084b-43c2-8365-4af8b47c31bc.jpg/1024x786.webp",
+        "image_md": "https://prod.pictures.autoscout24.net/listing-images/ba81f3c6-33db-4479-87b6-516a7a0017b6_48e11709-084b-43c2-8365-4af8b47c31bc.jpg/420x315.webp",
+        "image_sm": "https://prod.pictures.autoscout24.net/listing-images/ba81f3c6-33db-4479-87b6-516a7a0017b6_48e11709-084b-43c2-8365-4af8b47c31bc.jpg/180x135.webp",
+        "image_xs": "https://prod.pictures.autoscout24.net/listing-images/ba81f3c6-33db-4479-87b6-516a7a0017b6_48e11709-084b-43c2-8365-4af8b47c31bc.jpg/133x100.webp"
       },
       "condition": "used",
       "certified": true,
@@ -541,7 +541,7 @@
       "year": "2024",
       "make": "Volkswagen",
       "model": "Tiguan",
-      "trim": "Highline R-Line 2.0T 8sp at w/Tip 4M",
+      "trim": "Highline R-Line",
       "stock": "1V4359",
       "vin": "3VV4B7AX6RM134359",
       "url": "https://www.crosbyvw.com/vehicles/2024/Volkswagen/Tiguan/Kitchener/ON/71362121/?sale_class=Used",
@@ -615,33 +615,6 @@
       "onOrder": false,
       "title": "2023 Hyundai Tucson Hybrid",
       "key": "STK:2D9178",
-      "firstSeen": "2026-09-16T20:04:20.381Z",
-      "origin": "new"
-    },
-    {
-      "year": "2023",
-      "make": "Volkswagen",
-      "model": "Golf GTI",
-      "trim": "Performance 7sp at DSG w/Tip",
-      "stock": "1V3987",
-      "vin": "WVWVA7CD8PW183987",
-      "url": "https://www.crosbyvw.com/vehicles/2023/Volkswagen/Golf%20GTI/Kitchener/ON/71310148/?sale_class=Used",
-      "price": "32495",
-      "odometer": "53177",
-      "image": {
-        "image_original": "https://prod.pictures.autoscout24.net/listing-images/78dd8da2-6e7d-413d-86f3-522c383e7b45_9bcc0c34-2282-4b8d-b9c2-37baa7a08553.jpg",
-        "image_lg": "https://prod.pictures.autoscout24.net/listing-images/78dd8da2-6e7d-413d-86f3-522c383e7b45_9bcc0c34-2282-4b8d-b9c2-37baa7a08553.jpg/1024x786.webp",
-        "image_md": "https://prod.pictures.autoscout24.net/listing-images/78dd8da2-6e7d-413d-86f3-522c383e7b45_9bcc0c34-2282-4b8d-b9c2-37baa7a08553.jpg/420x315.webp",
-        "image_sm": "https://prod.pictures.autoscout24.net/listing-images/78dd8da2-6e7d-413d-86f3-522c383e7b45_9bcc0c34-2282-4b8d-b9c2-37baa7a08553.jpg/180x135.webp",
-        "image_xs": "https://prod.pictures.autoscout24.net/listing-images/78dd8da2-6e7d-413d-86f3-522c383e7b45_9bcc0c34-2282-4b8d-b9c2-37baa7a08553.jpg/133x100.webp"
-      },
-      "condition": "used",
-      "certified": true,
-      "daysOnLot": 7,
-      "inTransit": false,
-      "onOrder": false,
-      "title": "2023 Volkswagen Golf GTI",
-      "key": "STK:1V3987",
       "firstSeen": "2026-09-16T20:04:20.381Z",
       "origin": "new"
     },
@@ -730,8 +703,8 @@
       "year": "2022",
       "make": "Mercedes-Benz",
       "model": "GLC",
-      "trim": "4MATIC Coupe",
-      "stock": "1D058Z",
+      "trim": "GLC 300",
+      "stock": "1D508Z",
       "vin": "W1N0J8EB3NG059508",
       "url": "https://www.crosbyvw.com/vehicles/2022/Mercedes-Benz/GLC/Kitchener/ON/71362116/?sale_class=Used",
       "price": "37495",
@@ -749,35 +722,8 @@
       "inTransit": false,
       "onOrder": false,
       "title": "2022 Mercedes-Benz GLC",
-      "key": "STK:1D058Z",
-      "firstSeen": "2026-09-22T13:13:04.348Z",
-      "origin": "new"
-    },
-    {
-      "year": "2022",
-      "make": "Volkswagen",
-      "model": "Atlas Cross Sport",
-      "trim": "Execline 3.6L 8sp at w/Tip 4MOTION",
-      "stock": "1V306Z",
-      "vin": "1V2FE2CA1NC215306",
-      "url": "https://www.crosbyvw.com/vehicles/2022/Volkswagen/Atlas%20Cross%20Sport/Kitchener/ON/71362133/?sale_class=Used",
-      "price": "34495",
-      "odometer": "35971",
-      "image": {
-        "image_original": "https://prod.pictures.autoscout24.net/listing-images/42a74f94-efe9-4a4a-a520-a0d58e657b78_080a748c-426d-45f9-ae66-720548e319ba.jpg",
-        "image_lg": "https://prod.pictures.autoscout24.net/listing-images/42a74f94-efe9-4a4a-a520-a0d58e657b78_080a748c-426d-45f9-ae66-720548e319ba.jpg/1024x786.webp",
-        "image_md": "https://prod.pictures.autoscout24.net/listing-images/42a74f94-efe9-4a4a-a520-a0d58e657b78_080a748c-426d-45f9-ae66-720548e319ba.jpg/420x315.webp",
-        "image_sm": "https://prod.pictures.autoscout24.net/listing-images/42a74f94-efe9-4a4a-a520-a0d58e657b78_080a748c-426d-45f9-ae66-720548e319ba.jpg/180x135.webp",
-        "image_xs": "https://prod.pictures.autoscout24.net/listing-images/42a74f94-efe9-4a4a-a520-a0d58e657b78_080a748c-426d-45f9-ae66-720548e319ba.jpg/133x100.webp"
-      },
-      "condition": "used",
-      "certified": true,
-      "daysOnLot": 1,
-      "inTransit": false,
-      "onOrder": false,
-      "title": "2022 Volkswagen Atlas Cross Sport",
-      "key": "STK:1V306Z",
-      "firstSeen": "2026-09-22T13:13:04.348Z",
+      "key": "STK:1D508Z",
+      "firstSeen": "2026-09-23T16:40:36.612Z",
       "origin": "new"
     },
     {
