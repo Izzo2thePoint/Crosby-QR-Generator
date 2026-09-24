@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-09-24T15:36:24.048Z",
+  "fetchedAt": "2026-09-24T19:29:50.862Z",
   "listingUrl": "https://www.crosbyvw.com/vehicles/?sc=used&in_transit=true&in_stock=true&on_order=true&view=grid",
   "pagesFetched": [],
   "source": "inventory-api",
@@ -89,11 +89,11 @@
       "price": "51450",
       "odometer": "7298",
       "image": {
-        "image_original": "https://prod.pictures.autoscout24.net/listing-images/c7c58add-b2ab-4f75-9e4c-e80096259b3b_a9d55ad7-645f-43de-8660-9518bde6dc3e.jpg",
-        "image_lg": "https://prod.pictures.autoscout24.net/listing-images/c7c58add-b2ab-4f75-9e4c-e80096259b3b_a9d55ad7-645f-43de-8660-9518bde6dc3e.jpg/1024x786.webp",
-        "image_md": "https://prod.pictures.autoscout24.net/listing-images/c7c58add-b2ab-4f75-9e4c-e80096259b3b_a9d55ad7-645f-43de-8660-9518bde6dc3e.jpg/420x315.webp",
-        "image_sm": "https://prod.pictures.autoscout24.net/listing-images/c7c58add-b2ab-4f75-9e4c-e80096259b3b_a9d55ad7-645f-43de-8660-9518bde6dc3e.jpg/180x135.webp",
-        "image_xs": "https://prod.pictures.autoscout24.net/listing-images/c7c58add-b2ab-4f75-9e4c-e80096259b3b_a9d55ad7-645f-43de-8660-9518bde6dc3e.jpg/133x100.webp"
+        "image_original": "https://prod.pictures.autoscout24.net/listing-images/c7c58add-b2ab-4f75-9e4c-e80096259b3b_e79cf78c-719f-4039-868d-4d079213cf5e.jpg",
+        "image_lg": "https://prod.pictures.autoscout24.net/listing-images/c7c58add-b2ab-4f75-9e4c-e80096259b3b_e79cf78c-719f-4039-868d-4d079213cf5e.jpg/1024x786.webp",
+        "image_md": "https://prod.pictures.autoscout24.net/listing-images/c7c58add-b2ab-4f75-9e4c-e80096259b3b_e79cf78c-719f-4039-868d-4d079213cf5e.jpg/420x315.webp",
+        "image_sm": "https://prod.pictures.autoscout24.net/listing-images/c7c58add-b2ab-4f75-9e4c-e80096259b3b_e79cf78c-719f-4039-868d-4d079213cf5e.jpg/180x135.webp",
+        "image_xs": "https://prod.pictures.autoscout24.net/listing-images/c7c58add-b2ab-4f75-9e4c-e80096259b3b_e79cf78c-719f-4039-868d-4d079213cf5e.jpg/133x100.webp"
       },
       "condition": "used",
       "certified": false,
@@ -648,7 +648,7 @@
     {
       "year": "2022",
       "make": "Mercedes-Benz",
-      "model": "GLC",
+      "model": "GLC Coupe",
       "trim": "GLC 300",
       "stock": "1D508Z",
       "vin": "W1N0J8EB3NG059508",
@@ -667,7 +667,7 @@
       "daysOnLot": 2,
       "inTransit": false,
       "onOrder": false,
-      "title": "2022 Mercedes-Benz GLC",
+      "title": "2022 Mercedes-Benz GLC Coupe",
       "key": "STK:1D508Z",
       "firstSeen": "2026-09-23T16:40:36.612Z",
       "origin": "new"
@@ -1001,11 +1001,11 @@
       "price": "6995",
       "odometer": "235045",
       "image": {
-        "image_original": "https://prod.pictures.autoscout24.net/listing-images/f5ea3fc2-dc6b-4eca-bb7d-6efb8a9142f1_e8645662-7fcb-4843-bd7a-6c011d02f3ea.jpg",
-        "image_lg": "https://prod.pictures.autoscout24.net/listing-images/f5ea3fc2-dc6b-4eca-bb7d-6efb8a9142f1_e8645662-7fcb-4843-bd7a-6c011d02f3ea.jpg/1024x786.webp",
-        "image_md": "https://prod.pictures.autoscout24.net/listing-images/f5ea3fc2-dc6b-4eca-bb7d-6efb8a9142f1_e8645662-7fcb-4843-bd7a-6c011d02f3ea.jpg/420x315.webp",
-        "image_sm": "https://prod.pictures.autoscout24.net/listing-images/f5ea3fc2-dc6b-4eca-bb7d-6efb8a9142f1_e8645662-7fcb-4843-bd7a-6c011d02f3ea.jpg/180x135.webp",
-        "image_xs": "https://prod.pictures.autoscout24.net/listing-images/f5ea3fc2-dc6b-4eca-bb7d-6efb8a9142f1_e8645662-7fcb-4843-bd7a-6c011d02f3ea.jpg/133x100.webp"
+        "image_original": "https://prod.pictures.autoscout24.net/listing-images/f5ea3fc2-dc6b-4eca-bb7d-6efb8a9142f1_2a0ef6b7-18df-4549-93f3-c0b91f773520.jpg",
+        "image_lg": "https://prod.pictures.autoscout24.net/listing-images/f5ea3fc2-dc6b-4eca-bb7d-6efb8a9142f1_2a0ef6b7-18df-4549-93f3-c0b91f773520.jpg/1024x786.webp",
+        "image_md": "https://prod.pictures.autoscout24.net/listing-images/f5ea3fc2-dc6b-4eca-bb7d-6efb8a9142f1_2a0ef6b7-18df-4549-93f3-c0b91f773520.jpg/420x315.webp",
+        "image_sm": "https://prod.pictures.autoscout24.net/listing-images/f5ea3fc2-dc6b-4eca-bb7d-6efb8a9142f1_2a0ef6b7-18df-4549-93f3-c0b91f773520.jpg/180x135.webp",
+        "image_xs": "https://prod.pictures.autoscout24.net/listing-images/f5ea3fc2-dc6b-4eca-bb7d-6efb8a9142f1_2a0ef6b7-18df-4549-93f3-c0b91f773520.jpg/133x100.webp"
       },
       "condition": "used",
       "certified": false,
@@ -1047,7 +1047,7 @@
     {
       "year": "2013",
       "make": "Dodge",
-      "model": "Grand Caravan",
+      "model": "Grand Caravan Passenger Van",
       "trim": "SE Wagon",
       "stock": "1D3889",
       "vin": "2C4RDGBG4DR513889",
@@ -1060,7 +1060,7 @@
       "daysOnLot": 11,
       "inTransit": false,
       "onOrder": false,
-      "title": "2013 Dodge Grand Caravan",
+      "title": "2013 Dodge Grand Caravan Passenger Van",
       "key": "STK:1D3889",
       "firstSeen": "2026-09-16T20:04:20.381Z",
       "origin": "new"
