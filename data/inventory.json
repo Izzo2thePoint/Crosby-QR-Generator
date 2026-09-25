@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-09-25T17:29:43.779Z",
+  "fetchedAt": "2026-09-25T20:42:16.825Z",
   "listingUrl": "https://www.crosbyvw.com/vehicles/?sc=used&in_transit=true&in_stock=true&on_order=true&view=grid",
   "pagesFetched": [],
   "source": "inventory-api",
@@ -21,7 +21,7 @@
     "found": 41,
     "printable": 41,
     "incomplete": 0,
-    "newThisRun": 1
+    "newThisRun": 0
   },
   "vehicles": [
     {
