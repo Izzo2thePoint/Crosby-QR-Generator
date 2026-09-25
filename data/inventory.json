@@ -1,10 +1,10 @@
 {
-  "fetchedAt": "2026-09-25T01:50:13.120Z",
+  "fetchedAt": "2026-09-25T17:29:43.779Z",
   "listingUrl": "https://www.crosbyvw.com/vehicles/?sc=used&in_transit=true&in_stock=true&on_order=true&view=grid",
   "pagesFetched": [],
   "source": "inventory-api",
   "apiUrl": "https://www.crosbyvw.com/wp-content/plugins/convertus-vms/include/php/ajax-vehicles.php?endpoint=https%3A%2F%2Fvms.prod.convertus.rocks%2Fapi%2Ffiltering%2F%3Fcp%3D4211%26ln%3Den%26sc%3Dused%26in_transit%3Dtrue%26in_stock%3Dtrue%26on_order%3Dtrue%26hzpv%3Dtrue%26tg%3DInventoryTagDemo%26tgm%3Dexcl%26tgsc%3Dnew&action=vms_data",
-  "apiTotal": 42,
+  "apiTotal": 41,
   "apiWarning": null,
   "strategies": {},
   "config": {
@@ -18,10 +18,10 @@
     }
   },
   "counts": {
-    "found": 42,
-    "printable": 42,
+    "found": 41,
+    "printable": 41,
     "incomplete": 0,
-    "newThisRun": 0
+    "newThisRun": 1
   },
   "vehicles": [
     {
@@ -567,6 +567,33 @@
     {
       "year": "2023",
       "make": "Volkswagen",
+      "model": "Taos",
+      "trim": "Comfortline 1.5T 7sp at DSG w/ Tip 4M EOP",
+      "stock": "2V8710",
+      "vin": "3VVYX7B25PM328710",
+      "url": "https://www.crosbyvw.com/vehicles/2023/Volkswagen/Taos/Kitchener/ON/71395439/?sale_class=Used",
+      "price": "23495",
+      "odometer": "72389",
+      "image": {
+        "image_original": "https://prod.pictures.autoscout24.net/listing-images/f95b2e67-ed39-4a4a-a199-22b9d12a14c3_a1277101-b711-4dc9-afc3-6fecc011d86e.jpg",
+        "image_lg": "https://prod.pictures.autoscout24.net/listing-images/f95b2e67-ed39-4a4a-a199-22b9d12a14c3_a1277101-b711-4dc9-afc3-6fecc011d86e.jpg/1024x786.webp",
+        "image_md": "https://prod.pictures.autoscout24.net/listing-images/f95b2e67-ed39-4a4a-a199-22b9d12a14c3_a1277101-b711-4dc9-afc3-6fecc011d86e.jpg/420x315.webp",
+        "image_sm": "https://prod.pictures.autoscout24.net/listing-images/f95b2e67-ed39-4a4a-a199-22b9d12a14c3_a1277101-b711-4dc9-afc3-6fecc011d86e.jpg/180x135.webp",
+        "image_xs": "https://prod.pictures.autoscout24.net/listing-images/f95b2e67-ed39-4a4a-a199-22b9d12a14c3_a1277101-b711-4dc9-afc3-6fecc011d86e.jpg/133x100.webp"
+      },
+      "condition": "used",
+      "certified": false,
+      "daysOnLot": 0,
+      "inTransit": false,
+      "onOrder": false,
+      "title": "2023 Volkswagen Taos",
+      "key": "STK:2V8710",
+      "firstSeen": "2026-09-25T17:29:43.770Z",
+      "origin": "new"
+    },
+    {
+      "year": "2023",
+      "make": "Volkswagen",
       "model": "Tiguan",
       "trim": "Comfortline",
       "stock": "1V5162",
@@ -808,33 +835,6 @@
       "origin": "new"
     },
     {
-      "year": "2021",
-      "make": "Volkswagen",
-      "model": "Atlas",
-      "trim": "Highline",
-      "stock": "1V0547",
-      "vin": "1V2BR2CA7MC600547",
-      "url": "https://www.crosbyvw.com/vehicles/2021/Volkswagen/Atlas/Kitchener/ON/71135669/?sale_class=Used",
-      "price": "26995",
-      "odometer": "116500",
-      "image": {
-        "image_original": "https://prod.pictures.autoscout24.net/listing-images/ded1a2f2-d1e5-4ca2-8ce0-867811a2c29b_7498a64c-5f65-4749-bea5-6530a86e36fb.jpg",
-        "image_lg": "https://prod.pictures.autoscout24.net/listing-images/ded1a2f2-d1e5-4ca2-8ce0-867811a2c29b_7498a64c-5f65-4749-bea5-6530a86e36fb.jpg/1024x786.webp",
-        "image_md": "https://prod.pictures.autoscout24.net/listing-images/ded1a2f2-d1e5-4ca2-8ce0-867811a2c29b_7498a64c-5f65-4749-bea5-6530a86e36fb.jpg/420x315.webp",
-        "image_sm": "https://prod.pictures.autoscout24.net/listing-images/ded1a2f2-d1e5-4ca2-8ce0-867811a2c29b_7498a64c-5f65-4749-bea5-6530a86e36fb.jpg/180x135.webp",
-        "image_xs": "https://prod.pictures.autoscout24.net/listing-images/ded1a2f2-d1e5-4ca2-8ce0-867811a2c29b_7498a64c-5f65-4749-bea5-6530a86e36fb.jpg/133x100.webp"
-      },
-      "condition": "used",
-      "certified": false,
-      "daysOnLot": 29,
-      "inTransit": false,
-      "onOrder": false,
-      "title": "2021 Volkswagen Atlas",
-      "key": "STK:1V0547",
-      "firstSeen": "2026-09-16T20:04:20.381Z",
-      "origin": "new"
-    },
-    {
       "year": "2020",
       "make": "Hyundai",
       "model": "Santa Fe",
@@ -919,13 +919,19 @@
       "year": "2019",
       "make": "Volkswagen",
       "model": "Jetta GLI",
-      "trim": "35th 2.0T 7sp DSG at w/Tip (Offered Until 04.2019)",
+      "trim": "GLI 35th Edition",
       "stock": "1V8111",
       "vin": "3VW6T7BU8KM158111",
       "url": "https://www.crosbyvw.com/vehicles/2019/Volkswagen/Jetta/Kitchener/ON/71362138/?sale_class=Used",
       "price": "18495",
       "odometer": "135741",
-      "image": "",
+      "image": {
+        "image_original": "https://prod.pictures.autoscout24.net/listing-images/6c4f3d72-29fe-48a6-ba3a-9e0f0e4328c1_d4dbb05b-d256-4e35-9908-af27e78dd171.jpg",
+        "image_lg": "https://prod.pictures.autoscout24.net/listing-images/6c4f3d72-29fe-48a6-ba3a-9e0f0e4328c1_d4dbb05b-d256-4e35-9908-af27e78dd171.jpg/1024x786.webp",
+        "image_md": "https://prod.pictures.autoscout24.net/listing-images/6c4f3d72-29fe-48a6-ba3a-9e0f0e4328c1_d4dbb05b-d256-4e35-9908-af27e78dd171.jpg/420x315.webp",
+        "image_sm": "https://prod.pictures.autoscout24.net/listing-images/6c4f3d72-29fe-48a6-ba3a-9e0f0e4328c1_d4dbb05b-d256-4e35-9908-af27e78dd171.jpg/180x135.webp",
+        "image_xs": "https://prod.pictures.autoscout24.net/listing-images/6c4f3d72-29fe-48a6-ba3a-9e0f0e4328c1_d4dbb05b-d256-4e35-9908-af27e78dd171.jpg/133x100.webp"
+      },
       "condition": "used",
       "certified": true,
       "daysOnLot": 3,
@@ -1015,33 +1021,6 @@
       "title": "2016 MINI 3 Door",
       "key": "STK:1D3434",
       "firstSeen": "2026-09-16T20:04:20.381Z",
-      "origin": "new"
-    },
-    {
-      "year": "2014",
-      "make": "Hyundai",
-      "model": "Elantra",
-      "trim": "GL 6sp",
-      "stock": "1D8079",
-      "vin": "5NPDH4AE6EH528079",
-      "url": "https://www.crosbyvw.com/vehicles/2014/Hyundai/Elantra/Kitchener/ON/71362144/?sale_class=Used",
-      "price": "2500",
-      "odometer": "162492",
-      "image": {
-        "image_original": "https://prod.pictures.autoscout24.net/listing-images/535f3d06-a6fe-4b25-861b-a674d9d3fcfd_d800ce9d-d372-42be-9a2e-e032a3f9f56f.jpg",
-        "image_lg": "https://prod.pictures.autoscout24.net/listing-images/535f3d06-a6fe-4b25-861b-a674d9d3fcfd_d800ce9d-d372-42be-9a2e-e032a3f9f56f.jpg/1024x786.webp",
-        "image_md": "https://prod.pictures.autoscout24.net/listing-images/535f3d06-a6fe-4b25-861b-a674d9d3fcfd_d800ce9d-d372-42be-9a2e-e032a3f9f56f.jpg/420x315.webp",
-        "image_sm": "https://prod.pictures.autoscout24.net/listing-images/535f3d06-a6fe-4b25-861b-a674d9d3fcfd_d800ce9d-d372-42be-9a2e-e032a3f9f56f.jpg/180x135.webp",
-        "image_xs": "https://prod.pictures.autoscout24.net/listing-images/535f3d06-a6fe-4b25-861b-a674d9d3fcfd_d800ce9d-d372-42be-9a2e-e032a3f9f56f.jpg/133x100.webp"
-      },
-      "condition": "used",
-      "certified": false,
-      "daysOnLot": 3,
-      "inTransit": false,
-      "onOrder": false,
-      "title": "2014 Hyundai Elantra",
-      "key": "STK:1D8079",
-      "firstSeen": "2026-09-22T13:13:04.348Z",
       "origin": "new"
     },
     {
