@@ -1,10 +1,10 @@
 {
-  "fetchedAt": "2026-09-26T00:06:18.944Z",
+  "fetchedAt": "2026-09-26T16:41:48.395Z",
   "listingUrl": "https://www.crosbyvw.com/vehicles/?sc=used&in_transit=true&in_stock=true&on_order=true&view=grid",
   "pagesFetched": [],
   "source": "inventory-api",
   "apiUrl": "https://www.crosbyvw.com/wp-content/plugins/convertus-vms/include/php/ajax-vehicles.php?endpoint=https%3A%2F%2Fvms.prod.convertus.rocks%2Fapi%2Ffiltering%2F%3Fcp%3D4211%26ln%3Den%26sc%3Dused%26in_transit%3Dtrue%26in_stock%3Dtrue%26on_order%3Dtrue%26hzpv%3Dtrue%26tg%3DInventoryTagDemo%26tgm%3Dexcl%26tgsc%3Dnew&action=vms_data",
-  "apiTotal": 41,
+  "apiTotal": 40,
   "apiWarning": null,
   "strategies": {},
   "config": {
@@ -18,8 +18,8 @@
     }
   },
   "counts": {
-    "found": 41,
-    "printable": 41,
+    "found": 40,
+    "printable": 40,
     "incomplete": 0,
     "newThisRun": 0
   },
@@ -386,11 +386,11 @@
       "price": "38995",
       "odometer": "81051",
       "image": {
-        "image_original": "https://prod.pictures.autoscout24.net/listing-images/a47fbd7d-5d9a-4678-bfdc-e6a2e8d2004c_a83ef2bf-4c3d-4b0c-b5b5-9ff13cad358d.jpg",
-        "image_lg": "https://prod.pictures.autoscout24.net/listing-images/a47fbd7d-5d9a-4678-bfdc-e6a2e8d2004c_a83ef2bf-4c3d-4b0c-b5b5-9ff13cad358d.jpg/1024x786.webp",
-        "image_md": "https://prod.pictures.autoscout24.net/listing-images/a47fbd7d-5d9a-4678-bfdc-e6a2e8d2004c_a83ef2bf-4c3d-4b0c-b5b5-9ff13cad358d.jpg/420x315.webp",
-        "image_sm": "https://prod.pictures.autoscout24.net/listing-images/a47fbd7d-5d9a-4678-bfdc-e6a2e8d2004c_a83ef2bf-4c3d-4b0c-b5b5-9ff13cad358d.jpg/180x135.webp",
-        "image_xs": "https://prod.pictures.autoscout24.net/listing-images/a47fbd7d-5d9a-4678-bfdc-e6a2e8d2004c_a83ef2bf-4c3d-4b0c-b5b5-9ff13cad358d.jpg/133x100.webp"
+        "image_original": "https://prod.pictures.autoscout24.net/listing-images/a47fbd7d-5d9a-4678-bfdc-e6a2e8d2004c_1f9f616d-7c20-494a-bbb9-fd6d40435d74.jpg",
+        "image_lg": "https://prod.pictures.autoscout24.net/listing-images/a47fbd7d-5d9a-4678-bfdc-e6a2e8d2004c_1f9f616d-7c20-494a-bbb9-fd6d40435d74.jpg/1024x786.webp",
+        "image_md": "https://prod.pictures.autoscout24.net/listing-images/a47fbd7d-5d9a-4678-bfdc-e6a2e8d2004c_1f9f616d-7c20-494a-bbb9-fd6d40435d74.jpg/420x315.webp",
+        "image_sm": "https://prod.pictures.autoscout24.net/listing-images/a47fbd7d-5d9a-4678-bfdc-e6a2e8d2004c_1f9f616d-7c20-494a-bbb9-fd6d40435d74.jpg/180x135.webp",
+        "image_xs": "https://prod.pictures.autoscout24.net/listing-images/a47fbd7d-5d9a-4678-bfdc-e6a2e8d2004c_1f9f616d-7c20-494a-bbb9-fd6d40435d74.jpg/133x100.webp"
       },
       "condition": "used",
       "certified": false,
@@ -460,33 +460,6 @@
       "year": "2024",
       "make": "Volkswagen",
       "model": "Tiguan",
-      "trim": "Comfortline R-Line Black Edition",
-      "stock": "1V0825",
-      "vin": "3VV8B7AX3RM120825",
-      "url": "https://www.crosbyvw.com/vehicles/2024/Volkswagen/Tiguan/Kitchener/ON/71362137/?sale_class=Used",
-      "price": "31495",
-      "odometer": "42500",
-      "image": {
-        "image_original": "https://prod.pictures.autoscout24.net/listing-images/ba81f3c6-33db-4479-87b6-516a7a0017b6_48e11709-084b-43c2-8365-4af8b47c31bc.jpg",
-        "image_lg": "https://prod.pictures.autoscout24.net/listing-images/ba81f3c6-33db-4479-87b6-516a7a0017b6_48e11709-084b-43c2-8365-4af8b47c31bc.jpg/1024x786.webp",
-        "image_md": "https://prod.pictures.autoscout24.net/listing-images/ba81f3c6-33db-4479-87b6-516a7a0017b6_48e11709-084b-43c2-8365-4af8b47c31bc.jpg/420x315.webp",
-        "image_sm": "https://prod.pictures.autoscout24.net/listing-images/ba81f3c6-33db-4479-87b6-516a7a0017b6_48e11709-084b-43c2-8365-4af8b47c31bc.jpg/180x135.webp",
-        "image_xs": "https://prod.pictures.autoscout24.net/listing-images/ba81f3c6-33db-4479-87b6-516a7a0017b6_48e11709-084b-43c2-8365-4af8b47c31bc.jpg/133x100.webp"
-      },
-      "condition": "used",
-      "certified": true,
-      "daysOnLot": 4,
-      "inTransit": false,
-      "onOrder": false,
-      "title": "2024 Volkswagen Tiguan",
-      "key": "STK:1V0825",
-      "firstSeen": "2026-09-22T13:13:04.348Z",
-      "origin": "new"
-    },
-    {
-      "year": "2024",
-      "make": "Volkswagen",
-      "model": "Tiguan",
       "trim": "Highline R-Line",
       "stock": "1V4359",
       "vin": "3VV4B7AX6RM134359",
@@ -494,11 +467,11 @@
       "price": "31995",
       "odometer": "69560",
       "image": {
-        "image_original": "https://prod.pictures.autoscout24.net/listing-images/d8ab68b0-d4d2-482a-bcf6-e57be70a6827_64f6ac93-f47b-43f1-9475-fbef0a205386.jpg",
-        "image_lg": "https://prod.pictures.autoscout24.net/listing-images/d8ab68b0-d4d2-482a-bcf6-e57be70a6827_64f6ac93-f47b-43f1-9475-fbef0a205386.jpg/1024x786.webp",
-        "image_md": "https://prod.pictures.autoscout24.net/listing-images/d8ab68b0-d4d2-482a-bcf6-e57be70a6827_64f6ac93-f47b-43f1-9475-fbef0a205386.jpg/420x315.webp",
-        "image_sm": "https://prod.pictures.autoscout24.net/listing-images/d8ab68b0-d4d2-482a-bcf6-e57be70a6827_64f6ac93-f47b-43f1-9475-fbef0a205386.jpg/180x135.webp",
-        "image_xs": "https://prod.pictures.autoscout24.net/listing-images/d8ab68b0-d4d2-482a-bcf6-e57be70a6827_64f6ac93-f47b-43f1-9475-fbef0a205386.jpg/133x100.webp"
+        "image_original": "https://prod.pictures.autoscout24.net/listing-images/d8ab68b0-d4d2-482a-bcf6-e57be70a6827_4c922b59-c482-4731-9d17-fc0cc0611782.jpg",
+        "image_lg": "https://prod.pictures.autoscout24.net/listing-images/d8ab68b0-d4d2-482a-bcf6-e57be70a6827_4c922b59-c482-4731-9d17-fc0cc0611782.jpg/1024x786.webp",
+        "image_md": "https://prod.pictures.autoscout24.net/listing-images/d8ab68b0-d4d2-482a-bcf6-e57be70a6827_4c922b59-c482-4731-9d17-fc0cc0611782.jpg/420x315.webp",
+        "image_sm": "https://prod.pictures.autoscout24.net/listing-images/d8ab68b0-d4d2-482a-bcf6-e57be70a6827_4c922b59-c482-4731-9d17-fc0cc0611782.jpg/180x135.webp",
+        "image_xs": "https://prod.pictures.autoscout24.net/listing-images/d8ab68b0-d4d2-482a-bcf6-e57be70a6827_4c922b59-c482-4731-9d17-fc0cc0611782.jpg/133x100.webp"
       },
       "condition": "used",
       "certified": true,
@@ -602,11 +575,11 @@
       "price": "26495",
       "odometer": "67780",
       "image": {
-        "image_original": "https://prod.pictures.autoscout24.net/listing-images/b8c60358-174d-4b72-aa86-0c7a4602f338_0889dee0-ed72-4e51-8a1d-098cdd2d23e6.jpg",
-        "image_lg": "https://prod.pictures.autoscout24.net/listing-images/b8c60358-174d-4b72-aa86-0c7a4602f338_0889dee0-ed72-4e51-8a1d-098cdd2d23e6.jpg/1024x786.webp",
-        "image_md": "https://prod.pictures.autoscout24.net/listing-images/b8c60358-174d-4b72-aa86-0c7a4602f338_0889dee0-ed72-4e51-8a1d-098cdd2d23e6.jpg/420x315.webp",
-        "image_sm": "https://prod.pictures.autoscout24.net/listing-images/b8c60358-174d-4b72-aa86-0c7a4602f338_0889dee0-ed72-4e51-8a1d-098cdd2d23e6.jpg/180x135.webp",
-        "image_xs": "https://prod.pictures.autoscout24.net/listing-images/b8c60358-174d-4b72-aa86-0c7a4602f338_0889dee0-ed72-4e51-8a1d-098cdd2d23e6.jpg/133x100.webp"
+        "image_original": "https://prod.pictures.autoscout24.net/listing-images/b8c60358-174d-4b72-aa86-0c7a4602f338_18a944f9-567a-4aba-936e-966e40b18f2e.jpg",
+        "image_lg": "https://prod.pictures.autoscout24.net/listing-images/b8c60358-174d-4b72-aa86-0c7a4602f338_18a944f9-567a-4aba-936e-966e40b18f2e.jpg/1024x786.webp",
+        "image_md": "https://prod.pictures.autoscout24.net/listing-images/b8c60358-174d-4b72-aa86-0c7a4602f338_18a944f9-567a-4aba-936e-966e40b18f2e.jpg/420x315.webp",
+        "image_sm": "https://prod.pictures.autoscout24.net/listing-images/b8c60358-174d-4b72-aa86-0c7a4602f338_18a944f9-567a-4aba-936e-966e40b18f2e.jpg/180x135.webp",
+        "image_xs": "https://prod.pictures.autoscout24.net/listing-images/b8c60358-174d-4b72-aa86-0c7a4602f338_18a944f9-567a-4aba-936e-966e40b18f2e.jpg/133x100.webp"
       },
       "condition": "used",
       "certified": true,
@@ -683,11 +656,11 @@
       "price": "37495",
       "odometer": "123848",
       "image": {
-        "image_original": "https://prod.pictures.autoscout24.net/listing-images/8b50f857-82d6-4f5f-bc83-54b0f88ef2f3_4d165ff3-0f59-4902-b00d-72cf275db300.jpg",
-        "image_lg": "https://prod.pictures.autoscout24.net/listing-images/8b50f857-82d6-4f5f-bc83-54b0f88ef2f3_4d165ff3-0f59-4902-b00d-72cf275db300.jpg/1024x786.webp",
-        "image_md": "https://prod.pictures.autoscout24.net/listing-images/8b50f857-82d6-4f5f-bc83-54b0f88ef2f3_4d165ff3-0f59-4902-b00d-72cf275db300.jpg/420x315.webp",
-        "image_sm": "https://prod.pictures.autoscout24.net/listing-images/8b50f857-82d6-4f5f-bc83-54b0f88ef2f3_4d165ff3-0f59-4902-b00d-72cf275db300.jpg/180x135.webp",
-        "image_xs": "https://prod.pictures.autoscout24.net/listing-images/8b50f857-82d6-4f5f-bc83-54b0f88ef2f3_4d165ff3-0f59-4902-b00d-72cf275db300.jpg/133x100.webp"
+        "image_original": "https://prod.pictures.autoscout24.net/listing-images/8b50f857-82d6-4f5f-bc83-54b0f88ef2f3_86393718-c18a-45ee-9df7-4fb48b332018.jpg",
+        "image_lg": "https://prod.pictures.autoscout24.net/listing-images/8b50f857-82d6-4f5f-bc83-54b0f88ef2f3_86393718-c18a-45ee-9df7-4fb48b332018.jpg/1024x786.webp",
+        "image_md": "https://prod.pictures.autoscout24.net/listing-images/8b50f857-82d6-4f5f-bc83-54b0f88ef2f3_86393718-c18a-45ee-9df7-4fb48b332018.jpg/420x315.webp",
+        "image_sm": "https://prod.pictures.autoscout24.net/listing-images/8b50f857-82d6-4f5f-bc83-54b0f88ef2f3_86393718-c18a-45ee-9df7-4fb48b332018.jpg/180x135.webp",
+        "image_xs": "https://prod.pictures.autoscout24.net/listing-images/8b50f857-82d6-4f5f-bc83-54b0f88ef2f3_86393718-c18a-45ee-9df7-4fb48b332018.jpg/133x100.webp"
       },
       "condition": "used",
       "certified": false,
@@ -757,18 +730,18 @@
       "year": "2021",
       "make": "Ford",
       "model": "Bronco Sport",
-      "trim": "Sport Outer Banks 4x4",
+      "trim": "Outer Banks",
       "stock": "1D135Z",
       "vin": "3FMCR9C66MRA39135",
       "url": "https://www.crosbyvw.com/vehicles/2021/Ford/Bronco%20Sport/Kitchener/ON/71362125/?sale_class=Used",
       "price": "21995",
       "odometer": "123753",
       "image": {
-        "image_original": "https://prod.pictures.autoscout24.net/listing-images/cbad2993-340b-4cfe-b25b-e286b94df103_a9e1c434-76e1-4e9e-bb9d-3122387b66f3.jpg",
-        "image_lg": "https://prod.pictures.autoscout24.net/listing-images/cbad2993-340b-4cfe-b25b-e286b94df103_a9e1c434-76e1-4e9e-bb9d-3122387b66f3.jpg/1024x786.webp",
-        "image_md": "https://prod.pictures.autoscout24.net/listing-images/cbad2993-340b-4cfe-b25b-e286b94df103_a9e1c434-76e1-4e9e-bb9d-3122387b66f3.jpg/420x315.webp",
-        "image_sm": "https://prod.pictures.autoscout24.net/listing-images/cbad2993-340b-4cfe-b25b-e286b94df103_a9e1c434-76e1-4e9e-bb9d-3122387b66f3.jpg/180x135.webp",
-        "image_xs": "https://prod.pictures.autoscout24.net/listing-images/cbad2993-340b-4cfe-b25b-e286b94df103_a9e1c434-76e1-4e9e-bb9d-3122387b66f3.jpg/133x100.webp"
+        "image_original": "https://prod.pictures.autoscout24.net/listing-images/cbad2993-340b-4cfe-b25b-e286b94df103_636d67fb-aa93-41d7-b08c-fe253f813931.jpg",
+        "image_lg": "https://prod.pictures.autoscout24.net/listing-images/cbad2993-340b-4cfe-b25b-e286b94df103_636d67fb-aa93-41d7-b08c-fe253f813931.jpg/1024x786.webp",
+        "image_md": "https://prod.pictures.autoscout24.net/listing-images/cbad2993-340b-4cfe-b25b-e286b94df103_636d67fb-aa93-41d7-b08c-fe253f813931.jpg/420x315.webp",
+        "image_sm": "https://prod.pictures.autoscout24.net/listing-images/cbad2993-340b-4cfe-b25b-e286b94df103_636d67fb-aa93-41d7-b08c-fe253f813931.jpg/180x135.webp",
+        "image_xs": "https://prod.pictures.autoscout24.net/listing-images/cbad2993-340b-4cfe-b25b-e286b94df103_636d67fb-aa93-41d7-b08c-fe253f813931.jpg/133x100.webp"
       },
       "condition": "used",
       "certified": false,
@@ -926,11 +899,11 @@
       "price": "18495",
       "odometer": "135741",
       "image": {
-        "image_original": "https://prod.pictures.autoscout24.net/listing-images/6c4f3d72-29fe-48a6-ba3a-9e0f0e4328c1_d4dbb05b-d256-4e35-9908-af27e78dd171.jpg",
-        "image_lg": "https://prod.pictures.autoscout24.net/listing-images/6c4f3d72-29fe-48a6-ba3a-9e0f0e4328c1_d4dbb05b-d256-4e35-9908-af27e78dd171.jpg/1024x786.webp",
-        "image_md": "https://prod.pictures.autoscout24.net/listing-images/6c4f3d72-29fe-48a6-ba3a-9e0f0e4328c1_d4dbb05b-d256-4e35-9908-af27e78dd171.jpg/420x315.webp",
-        "image_sm": "https://prod.pictures.autoscout24.net/listing-images/6c4f3d72-29fe-48a6-ba3a-9e0f0e4328c1_d4dbb05b-d256-4e35-9908-af27e78dd171.jpg/180x135.webp",
-        "image_xs": "https://prod.pictures.autoscout24.net/listing-images/6c4f3d72-29fe-48a6-ba3a-9e0f0e4328c1_d4dbb05b-d256-4e35-9908-af27e78dd171.jpg/133x100.webp"
+        "image_original": "https://prod.pictures.autoscout24.net/listing-images/6c4f3d72-29fe-48a6-ba3a-9e0f0e4328c1_986656d6-a1fe-4ecf-876a-a0cd41b7b1e9.jpg",
+        "image_lg": "https://prod.pictures.autoscout24.net/listing-images/6c4f3d72-29fe-48a6-ba3a-9e0f0e4328c1_986656d6-a1fe-4ecf-876a-a0cd41b7b1e9.jpg/1024x786.webp",
+        "image_md": "https://prod.pictures.autoscout24.net/listing-images/6c4f3d72-29fe-48a6-ba3a-9e0f0e4328c1_986656d6-a1fe-4ecf-876a-a0cd41b7b1e9.jpg/420x315.webp",
+        "image_sm": "https://prod.pictures.autoscout24.net/listing-images/6c4f3d72-29fe-48a6-ba3a-9e0f0e4328c1_986656d6-a1fe-4ecf-876a-a0cd41b7b1e9.jpg/180x135.webp",
+        "image_xs": "https://prod.pictures.autoscout24.net/listing-images/6c4f3d72-29fe-48a6-ba3a-9e0f0e4328c1_986656d6-a1fe-4ecf-876a-a0cd41b7b1e9.jpg/133x100.webp"
       },
       "condition": "used",
       "certified": true,
@@ -953,11 +926,11 @@
       "price": "13495",
       "odometer": "108236",
       "image": {
-        "image_original": "https://prod.pictures.autoscout24.net/listing-images/7b41ad03-949a-427a-9e63-51b2670498f7_1ea969ea-a9d4-494f-b557-c440897df4aa.jpg",
-        "image_lg": "https://prod.pictures.autoscout24.net/listing-images/7b41ad03-949a-427a-9e63-51b2670498f7_1ea969ea-a9d4-494f-b557-c440897df4aa.jpg/1024x786.webp",
-        "image_md": "https://prod.pictures.autoscout24.net/listing-images/7b41ad03-949a-427a-9e63-51b2670498f7_1ea969ea-a9d4-494f-b557-c440897df4aa.jpg/420x315.webp",
-        "image_sm": "https://prod.pictures.autoscout24.net/listing-images/7b41ad03-949a-427a-9e63-51b2670498f7_1ea969ea-a9d4-494f-b557-c440897df4aa.jpg/180x135.webp",
-        "image_xs": "https://prod.pictures.autoscout24.net/listing-images/7b41ad03-949a-427a-9e63-51b2670498f7_1ea969ea-a9d4-494f-b557-c440897df4aa.jpg/133x100.webp"
+        "image_original": "https://prod.pictures.autoscout24.net/listing-images/7b41ad03-949a-427a-9e63-51b2670498f7_9c796eb2-5d6f-44e1-bf95-0188e22b03f3.jpg",
+        "image_lg": "https://prod.pictures.autoscout24.net/listing-images/7b41ad03-949a-427a-9e63-51b2670498f7_9c796eb2-5d6f-44e1-bf95-0188e22b03f3.jpg/1024x786.webp",
+        "image_md": "https://prod.pictures.autoscout24.net/listing-images/7b41ad03-949a-427a-9e63-51b2670498f7_9c796eb2-5d6f-44e1-bf95-0188e22b03f3.jpg/420x315.webp",
+        "image_sm": "https://prod.pictures.autoscout24.net/listing-images/7b41ad03-949a-427a-9e63-51b2670498f7_9c796eb2-5d6f-44e1-bf95-0188e22b03f3.jpg/180x135.webp",
+        "image_xs": "https://prod.pictures.autoscout24.net/listing-images/7b41ad03-949a-427a-9e63-51b2670498f7_9c796eb2-5d6f-44e1-bf95-0188e22b03f3.jpg/133x100.webp"
       },
       "condition": "used",
       "certified": false,
@@ -1007,11 +980,11 @@
       "price": "6995",
       "odometer": "235045",
       "image": {
-        "image_original": "https://prod.pictures.autoscout24.net/listing-images/f5ea3fc2-dc6b-4eca-bb7d-6efb8a9142f1_2a0ef6b7-18df-4549-93f3-c0b91f773520.jpg",
-        "image_lg": "https://prod.pictures.autoscout24.net/listing-images/f5ea3fc2-dc6b-4eca-bb7d-6efb8a9142f1_2a0ef6b7-18df-4549-93f3-c0b91f773520.jpg/1024x786.webp",
-        "image_md": "https://prod.pictures.autoscout24.net/listing-images/f5ea3fc2-dc6b-4eca-bb7d-6efb8a9142f1_2a0ef6b7-18df-4549-93f3-c0b91f773520.jpg/420x315.webp",
-        "image_sm": "https://prod.pictures.autoscout24.net/listing-images/f5ea3fc2-dc6b-4eca-bb7d-6efb8a9142f1_2a0ef6b7-18df-4549-93f3-c0b91f773520.jpg/180x135.webp",
-        "image_xs": "https://prod.pictures.autoscout24.net/listing-images/f5ea3fc2-dc6b-4eca-bb7d-6efb8a9142f1_2a0ef6b7-18df-4549-93f3-c0b91f773520.jpg/133x100.webp"
+        "image_original": "https://prod.pictures.autoscout24.net/listing-images/f5ea3fc2-dc6b-4eca-bb7d-6efb8a9142f1_907d6f83-6930-4ec5-ae14-3f95dabe2f99.jpg",
+        "image_lg": "https://prod.pictures.autoscout24.net/listing-images/f5ea3fc2-dc6b-4eca-bb7d-6efb8a9142f1_907d6f83-6930-4ec5-ae14-3f95dabe2f99.jpg/1024x786.webp",
+        "image_md": "https://prod.pictures.autoscout24.net/listing-images/f5ea3fc2-dc6b-4eca-bb7d-6efb8a9142f1_907d6f83-6930-4ec5-ae14-3f95dabe2f99.jpg/420x315.webp",
+        "image_sm": "https://prod.pictures.autoscout24.net/listing-images/f5ea3fc2-dc6b-4eca-bb7d-6efb8a9142f1_907d6f83-6930-4ec5-ae14-3f95dabe2f99.jpg/180x135.webp",
+        "image_xs": "https://prod.pictures.autoscout24.net/listing-images/f5ea3fc2-dc6b-4eca-bb7d-6efb8a9142f1_907d6f83-6930-4ec5-ae14-3f95dabe2f99.jpg/133x100.webp"
       },
       "condition": "used",
       "certified": false,
@@ -1027,7 +1000,7 @@
       "year": "2013",
       "make": "Dodge",
       "model": "Grand Caravan Passenger Van",
-      "trim": "SE Wagon",
+      "trim": "SXT",
       "stock": "1D3889",
       "vin": "2C4RDGBG4DR513889",
       "url": "https://www.crosbyvw.com/vehicles/2013/Dodge/Grand%20Caravan/Kitchener/ON/71289678/?sale_class=Used",
@@ -1075,13 +1048,19 @@
       "year": "2009",
       "make": "GMC",
       "model": "Acadia",
-      "trim": "SLT FWD",
+      "trim": "SLE",
       "stock": "1D9709",
       "vin": "1GKER13D59J149709",
       "url": "https://www.crosbyvw.com/vehicles/2009/GMC/Acadia/Kitchener/ON/71362142/?sale_class=Used",
       "price": "2000",
       "odometer": "260348",
-      "image": "",
+      "image": {
+        "image_original": "https://prod.pictures.autoscout24.net/listing-images/6ace0c56-1ce0-4c75-a700-7800f2656c41_9e0176d1-c9c3-4f91-86c0-f2fbba0458c1.jpg",
+        "image_lg": "https://prod.pictures.autoscout24.net/listing-images/6ace0c56-1ce0-4c75-a700-7800f2656c41_9e0176d1-c9c3-4f91-86c0-f2fbba0458c1.jpg/1024x786.webp",
+        "image_md": "https://prod.pictures.autoscout24.net/listing-images/6ace0c56-1ce0-4c75-a700-7800f2656c41_9e0176d1-c9c3-4f91-86c0-f2fbba0458c1.jpg/420x315.webp",
+        "image_sm": "https://prod.pictures.autoscout24.net/listing-images/6ace0c56-1ce0-4c75-a700-7800f2656c41_9e0176d1-c9c3-4f91-86c0-f2fbba0458c1.jpg/180x135.webp",
+        "image_xs": "https://prod.pictures.autoscout24.net/listing-images/6ace0c56-1ce0-4c75-a700-7800f2656c41_9e0176d1-c9c3-4f91-86c0-f2fbba0458c1.jpg/133x100.webp"
+      },
       "condition": "used",
       "certified": false,
       "daysOnLot": 4,
@@ -1102,7 +1081,13 @@
       "url": "https://www.crosbyvw.com/vehicles/2006/Hyundai/Santa%20Fe/Kitchener/ON/71259849/?sale_class=Used",
       "price": "4000",
       "odometer": "120006",
-      "image": "",
+      "image": {
+        "image_original": "https://prod.pictures.autoscout24.net/listing-images/1cc18fb6-96f3-4929-b980-57a0c2918938_0c84fcd9-6050-4a76-b25c-96b2be5ed40e.jpg",
+        "image_lg": "https://prod.pictures.autoscout24.net/listing-images/1cc18fb6-96f3-4929-b980-57a0c2918938_0c84fcd9-6050-4a76-b25c-96b2be5ed40e.jpg/1024x786.webp",
+        "image_md": "https://prod.pictures.autoscout24.net/listing-images/1cc18fb6-96f3-4929-b980-57a0c2918938_0c84fcd9-6050-4a76-b25c-96b2be5ed40e.jpg/420x315.webp",
+        "image_sm": "https://prod.pictures.autoscout24.net/listing-images/1cc18fb6-96f3-4929-b980-57a0c2918938_0c84fcd9-6050-4a76-b25c-96b2be5ed40e.jpg/180x135.webp",
+        "image_xs": "https://prod.pictures.autoscout24.net/listing-images/1cc18fb6-96f3-4929-b980-57a0c2918938_0c84fcd9-6050-4a76-b25c-96b2be5ed40e.jpg/133x100.webp"
+      },
       "condition": "used",
       "certified": false,
       "daysOnLot": 16,
