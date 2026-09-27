@@ -1,10 +1,10 @@
 {
-  "fetchedAt": "2026-09-27T01:43:03.106Z",
+  "fetchedAt": "2026-09-27T17:13:41.661Z",
   "listingUrl": "https://www.crosbyvw.com/vehicles/?sc=used&in_transit=true&in_stock=true&on_order=true&view=grid",
   "pagesFetched": [],
   "source": "inventory-api",
   "apiUrl": "https://www.crosbyvw.com/wp-content/plugins/convertus-vms/include/php/ajax-vehicles.php?endpoint=https%3A%2F%2Fvms.prod.convertus.rocks%2Fapi%2Ffiltering%2F%3Fcp%3D4211%26ln%3Den%26sc%3Dused%26in_transit%3Dtrue%26in_stock%3Dtrue%26on_order%3Dtrue%26hzpv%3Dtrue%26tg%3DInventoryTagDemo%26tgm%3Dexcl%26tgsc%3Dnew&action=vms_data",
-  "apiTotal": 40,
+  "apiTotal": 39,
   "apiWarning": null,
   "strategies": {},
   "config": {
@@ -18,8 +18,8 @@
     }
   },
   "counts": {
-    "found": 40,
-    "printable": 40,
+    "found": 39,
+    "printable": 39,
     "incomplete": 0,
     "newThisRun": 0
   },
@@ -86,14 +86,14 @@
       "stock": "AT7344",
       "vin": "1V2LN2CA3TC547344",
       "url": "https://www.crosbyvw.com/vehicles/2026/Volkswagen/Atlas/Kitchener/ON/70691539/?sale_class=Used",
-      "price": "51450",
+      "price": "53190",
       "odometer": "7298",
       "image": {
-        "image_original": "https://prod.pictures.autoscout24.net/listing-images/c7c58add-b2ab-4f75-9e4c-e80096259b3b_e79cf78c-719f-4039-868d-4d079213cf5e.jpg",
-        "image_lg": "https://prod.pictures.autoscout24.net/listing-images/c7c58add-b2ab-4f75-9e4c-e80096259b3b_e79cf78c-719f-4039-868d-4d079213cf5e.jpg/1024x786.webp",
-        "image_md": "https://prod.pictures.autoscout24.net/listing-images/c7c58add-b2ab-4f75-9e4c-e80096259b3b_e79cf78c-719f-4039-868d-4d079213cf5e.jpg/420x315.webp",
-        "image_sm": "https://prod.pictures.autoscout24.net/listing-images/c7c58add-b2ab-4f75-9e4c-e80096259b3b_e79cf78c-719f-4039-868d-4d079213cf5e.jpg/180x135.webp",
-        "image_xs": "https://prod.pictures.autoscout24.net/listing-images/c7c58add-b2ab-4f75-9e4c-e80096259b3b_e79cf78c-719f-4039-868d-4d079213cf5e.jpg/133x100.webp"
+        "image_original": "https://prod.pictures.autoscout24.net/listing-images/c7c58add-b2ab-4f75-9e4c-e80096259b3b_761f62f5-25ac-45af-96e7-cdc76d21031a.jpg",
+        "image_lg": "https://prod.pictures.autoscout24.net/listing-images/c7c58add-b2ab-4f75-9e4c-e80096259b3b_761f62f5-25ac-45af-96e7-cdc76d21031a.jpg/1024x786.webp",
+        "image_md": "https://prod.pictures.autoscout24.net/listing-images/c7c58add-b2ab-4f75-9e4c-e80096259b3b_761f62f5-25ac-45af-96e7-cdc76d21031a.jpg/420x315.webp",
+        "image_sm": "https://prod.pictures.autoscout24.net/listing-images/c7c58add-b2ab-4f75-9e4c-e80096259b3b_761f62f5-25ac-45af-96e7-cdc76d21031a.jpg/180x135.webp",
+        "image_xs": "https://prod.pictures.autoscout24.net/listing-images/c7c58add-b2ab-4f75-9e4c-e80096259b3b_761f62f5-25ac-45af-96e7-cdc76d21031a.jpg/133x100.webp"
       },
       "condition": "used",
       "certified": false,
@@ -943,33 +943,6 @@
       "origin": "new"
     },
     {
-      "year": "2018",
-      "make": "Kia",
-      "model": "Sportage",
-      "trim": "EX",
-      "stock": "1D6557",
-      "vin": "KNDPNCAC1J7316557",
-      "url": "https://www.crosbyvw.com/vehicles/2018/Kia/Sportage/Kitchener/ON/71135668/?sale_class=Used",
-      "price": "15495",
-      "odometer": "105485",
-      "image": {
-        "image_original": "https://prod.pictures.autoscout24.net/listing-images/562a2b42-6399-4a9d-ba44-fe2c1570baf6_abf72b03-b60a-47e1-b9c5-2b8e2f625d3e.jpg",
-        "image_lg": "https://prod.pictures.autoscout24.net/listing-images/562a2b42-6399-4a9d-ba44-fe2c1570baf6_abf72b03-b60a-47e1-b9c5-2b8e2f625d3e.jpg/1024x786.webp",
-        "image_md": "https://prod.pictures.autoscout24.net/listing-images/562a2b42-6399-4a9d-ba44-fe2c1570baf6_abf72b03-b60a-47e1-b9c5-2b8e2f625d3e.jpg/420x315.webp",
-        "image_sm": "https://prod.pictures.autoscout24.net/listing-images/562a2b42-6399-4a9d-ba44-fe2c1570baf6_abf72b03-b60a-47e1-b9c5-2b8e2f625d3e.jpg/180x135.webp",
-        "image_xs": "https://prod.pictures.autoscout24.net/listing-images/562a2b42-6399-4a9d-ba44-fe2c1570baf6_abf72b03-b60a-47e1-b9c5-2b8e2f625d3e.jpg/133x100.webp"
-      },
-      "condition": "used",
-      "certified": false,
-      "daysOnLot": 31,
-      "inTransit": false,
-      "onOrder": false,
-      "title": "2018 Kia Sportage",
-      "key": "STK:1D6557",
-      "firstSeen": "2026-09-16T20:04:20.381Z",
-      "origin": "new"
-    },
-    {
       "year": "2016",
       "make": "MINI",
       "model": "3 Door",
@@ -1006,7 +979,13 @@
       "url": "https://www.crosbyvw.com/vehicles/2013/Dodge/Grand%20Caravan/Kitchener/ON/71289678/?sale_class=Used",
       "price": "2500",
       "odometer": "251176",
-      "image": "",
+      "image": {
+        "image_original": "https://prod.pictures.autoscout24.net/listing-images/bfa3b391-9d13-4a78-aaef-486721369a93_e74dccdb-87e5-4d44-af87-22ad2bca7d5b.jpg",
+        "image_lg": "https://prod.pictures.autoscout24.net/listing-images/bfa3b391-9d13-4a78-aaef-486721369a93_e74dccdb-87e5-4d44-af87-22ad2bca7d5b.jpg/1024x786.webp",
+        "image_md": "https://prod.pictures.autoscout24.net/listing-images/bfa3b391-9d13-4a78-aaef-486721369a93_e74dccdb-87e5-4d44-af87-22ad2bca7d5b.jpg/420x315.webp",
+        "image_sm": "https://prod.pictures.autoscout24.net/listing-images/bfa3b391-9d13-4a78-aaef-486721369a93_e74dccdb-87e5-4d44-af87-22ad2bca7d5b.jpg/180x135.webp",
+        "image_xs": "https://prod.pictures.autoscout24.net/listing-images/bfa3b391-9d13-4a78-aaef-486721369a93_e74dccdb-87e5-4d44-af87-22ad2bca7d5b.jpg/133x100.webp"
+      },
       "condition": "used",
       "certified": false,
       "daysOnLot": 14,
