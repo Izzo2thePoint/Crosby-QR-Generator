@@ -197,6 +197,106 @@ let server;
 let scrape;
 let stateLib;
 
+
+// ---------------------------------------------------------------------------
+// A stand-in for the site as it is now (D2C Media): server-rendered vehicle
+// cards, only the first page of results on the search page, complete per-brand
+// pages, and a count per brand under the results. Markup follows the live site,
+// quirks included (mixed quote styles, the "-DEMO" stock suffix, a copy of the
+// brand heading hidden in a template input).
+// ---------------------------------------------------------------------------
+
+const D2C_FLEET = [
+  { id: '14181867', stock: '1V4690', vin: '3VWDX7AJ8CM304690', year: '2012', make: 'Volkswagen', model: 'Jetta', trim: 'Sportline 2.5 6sp At', km: '255,000', price: 2000, cond: 'USED', section: 'used', brand: 'Volkswagen' },
+  { id: '14357254', stock: '1V3502', vin: '3VWGB7BU0RM000001', year: '2024', make: 'Volkswagen', model: 'Jetta GLI', trim: '2.0t 6sp', km: '61,865', price: 29995, cond: 'USED', section: 'used', brand: 'Volkswagen' },
+  { id: '14308674', stock: 'JG4050-DEMO', vin: '3VWEW7BU2VM004050', year: '2027', make: 'Volkswagen', model: 'Jetta', trim: 'Comfortline Sedan', km: '827', price: 33025, cond: 'NEW', section: 'demos', brand: 'Volkswagen' },
+  { id: '14150815', stock: '1D6370', vin: '5NMP5DGL0RH000002', year: '2024', make: 'Hyundai', model: 'Santa Fe', trim: '2.5t Ultimate', km: '22,726', price: 41995, cond: 'USED', section: 'used', brand: 'Hyundai' },
+  { id: '14150808', stock: '1D9014', vin: '5NMS3CAD0LH000003', year: '2020', make: 'Hyundai', model: 'Santa Fe', trim: 'Preferred Awd 2.4l', km: '90,897', price: 21995, cond: 'USED', section: 'used', brand: 'Hyundai' },
+  { id: '14410986', stock: '1D508Z', vin: 'W1N0J8EB0NG000004', year: '2022', make: 'Mercedes-Benz', model: 'GLC 300', trim: '4matic Coupe', km: '123,848', price: 38995, cond: 'USED', section: 'used', brand: 'Mercedes_Benz' }
+];
+const D2C_FIRST_PAGE = 4;
+
+function d2cPath(v) {
+  return `/${v.section}/${v.year}-${v.brand}-${v.model.replace(/ /g, '_')}-id${v.id}.html`;
+}
+
+function d2cCard(v, state) {
+  const base = `http://127.0.0.1:${state.port}`;
+  const link = state.broken ? '' : d2cPath(v);
+  const offers = state.broken ? { '@type': 'Offer', price: v.price } : { '@type': 'Offer', url: base + link, price: v.price, priceCurrency: 'CAD' };
+  const ld = (type) => JSON.stringify({ '@context': 'https://schema.org/', '@type': type, name: `${v.year} ${v.make} ${v.model} `,
+    sku: Number(v.id), productID: Number(v.id), brand: { '@type': 'Brand', name: v.make },
+    ...(type === 'Vehicle' ? { vehicleIdentificationNumber: v.vin } : {}), offers }).replace(/\//g, '\\/');
+  return `<li class="carBoxWrapper" id="V${v.id}" data-carid="${v.id}">
+    <script type="application/ld+json"> ${ld('Product')} </script>
+    <script type="application/ld+json"> ${ld('Vehicle')} </script>
+    <div class="carBoxOuter elIsLoading " data-owner="5964"><div class="carBoxInner stack-lc">
+    <div class="carImage -mv0 " data-make="${v.make}" data-model="${v.model}" data-year="${v.year}" data-nostock="${v.stock}" data-vin="${v.vin}">
+      <a href="${link}" title="${v.year} ${v.make} ${v.model} in Kitchener"><img alt="${v.make} ${v.model} ${v.year}" class='mainImage elIsLoadable' data-imgsrc="https://imagescdn.example/${v.id}/1.jpg" src="https://imagescdn.example/${v.id}/1.jpg" /></a>
+      <div class='divStockTextSelect'>Stock: ${v.stock}<br />VIN: ${v.vin}</div>
+    </div>
+    <div class="carInfos"><div class="carBasics flex-between">
+      <a href="${link}" class="carTitle shrink-grow"><span data-scoderef="SA-20230706" class="h2-alt">
+        <span class='divMake '>${v.make} </span> <span class='divModelYear'>${v.year} ${v.model}</span>
+        <span class='divTrim'>${v.trim} </span> <span class='divCity'>in Kitchener</span></span></a>
+      <div class="carPrice" data-nosnippet><span class='dollarsigned p-base '>${v.price.toLocaleString('en-CA')}</span></div>
+    </div></div>
+    <input name="vehicledata" type="hidden" data-carid="${v.id}" data-make="${v.make}" data-model="${v.model}" data-year="${v.year}" data-trim="" data-stock-number="${v.stock}" data-vin="${v.vin}" data-condition="${v.cond}" />
+    <div class="carDescription -p shrink-grow"><span class='s-desc'><span class='s-km'>${v.km} KM</span>. Auto., Ext: Silver,</span></div>
+    </div></div>
+  </li>`;
+}
+
+function d2cPage(cards, state, withBrandCounts) {
+  const counts = new Map();
+  for (const v of state.fleet) {
+    const key = `/${v.section}/${v.brand}.html`;
+    counts.set(key, (counts.get(key) || 0) + 1);
+  }
+  const brandList = [...counts.entries()].map(([href, n], i) =>
+    `<li ${i > 2 ? 'class="hideMe"' : ''}><a href="${href}">Used ${href.split('/').pop().replace('.html', '').replace('_', '-')} in Kitchener</a><span class="s-num">${n}</span></li>`).join('');
+  return `<!doctype html><html lang="en-CA"><head><title>Crosby Volkswagen | Used Vehicles for sale in Kitchener</title>
+    <script type="application/ld+json">{"@context":"https:\\/\\/schema.org","@type":"WebSite","name":"Crosby Volkswagen"}</script></head>
+    <body class="UsedSrp2">
+    <input type='hidden' value="Our stock by brand" id='textLinkTitleMC'/>
+    <div class="divSpan divSpan12 lstListingWrapper"><ul>${cards.map((v) => d2cCard(v, state)).join('')}</ul></div>
+    <div id="fltPageId" class="divSpan divSpan12 elPaginationBox"></div>
+    ${withBrandCounts ? `<div class='divSeoLinkWrapper'><div class='divSeoLinkInner'><p class='heading3'>Our stock by brand</p><ul showhidden='0'>${brandList}</ul></div></div>` : ''}
+    </body></html>`;
+}
+
+function d2cSite(state) {
+  return http.createServer((req, res) => {
+    const url = new URL(req.url, `http://127.0.0.1:${state.port}`);
+    state.hits.push(url.pathname);
+    // The old address now redirects to the new search page, as on the live site.
+    if (url.pathname === '/vehicles/') {
+      res.writeHead(301, { Location: '/used/search.html' });
+      res.end();
+      return;
+    }
+    const send = (html) => { res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' }); res.end(html); };
+    if (url.pathname === '/used/search.html') {
+      send(d2cPage(state.fleet.slice(0, D2C_FIRST_PAGE), state, state.brandCounts));
+      return;
+    }
+    if (state.missing.includes(url.pathname)) {
+      res.writeHead(404, { 'Content-Type': 'text/html' });
+      res.end('<html><body>Not found</body></html>');
+      return;
+    }
+    const brandPage = /^\/(used|demos)\/([A-Za-z_]+)\.html$/.exec(url.pathname);
+    if (brandPage) {
+      // A used brand page lists that make's demos too, as the live one does.
+      const cars = state.fleet.filter((v) => v.brand === brandPage[2] && (brandPage[1] === 'used' || v.section === 'demos'));
+      send(d2cPage(cars, state, state.brandCounts));
+      return;
+    }
+    res.writeHead(404, { 'Content-Type': 'text/html' });
+    res.end('<html><body>Not found</body></html>');
+  });
+}
+
 async function main() {
   siteState = { port: 0, page1: [FIXTURES.jetta, FIXTURES.atlas], page2: [FIXTURES.gti] };
   server = fakeSite(siteState);
@@ -419,6 +519,105 @@ async function main() {
     assert.equal(run.inventory.vehicles[0].stock, 'FB0001');
   });
 
+
+  // ---- the site as it is now (D2C Media) ----
+  const d2cState = { port: 0, fleet: D2C_FLEET, hits: [], broken: false, brandCounts: true, missing: [] };
+  const d2cServer = d2cSite(d2cState);
+  await new Promise((resolve) => d2cServer.listen(0, '127.0.0.1', resolve));
+  d2cState.port = d2cServer.address().port;
+  const d2cBase = `http://127.0.0.1:${d2cState.port}`;
+  // The address the tool was set up with: it now redirects to the new search page.
+  const d2cOldListing = `${d2cBase}/vehicles/?sc=used&in_transit=true&in_stock=true&on_order=true&view=grid`;
+  let d2cRun = null;
+
+  check('follows the old listing address to the new site and reads the whole lot', async () => {
+    d2cState.hits = [];
+    d2cRun = await scrape.runScrape({ url: d2cOldListing, baseline: true, log: quiet });
+    assert.equal(d2cRun.inventory.source, 'd2c-listing');
+    assert.equal(d2cRun.inventory.apiTotal, D2C_FLEET.length, 'the total should come from the site\'s own counts');
+    assert.equal(d2cRun.inventory.counts.printable, D2C_FLEET.length, 'every vehicle should be read, not just the first page');
+    assert.equal(d2cRun.inventory.apiWarning, null);
+  });
+
+  check('reads only the brand pages that came up short', async () => {
+    const brandPages = d2cState.hits.filter((hit) => /^\/(used|demos)\/[A-Za-z_]+\.html$/.test(hit) && hit !== '/used/search.html');
+    assert.deepEqual(brandPages.sort(), ['/used/Hyundai.html', '/used/Mercedes_Benz.html']);
+  });
+
+  check('maps a listing card onto the label', async () => {
+    const jetta = d2cRun.inventory.vehicles.find((vehicle) => vehicle.stock === '1V4690');
+    assert.ok(jetta, '1V4690 should be listed');
+    assert.equal(jetta.year, '2012');
+    assert.equal(jetta.make, 'Volkswagen');
+    assert.equal(jetta.model, 'Jetta');
+    assert.equal(jetta.trim, 'Sportline 2.5 6sp AT');
+    assert.equal(jetta.vin, '3VWDX7AJ8CM304690');
+    assert.equal(jetta.odometer, '255000');
+    assert.equal(jetta.url, `${d2cBase}/used/2012-Volkswagen-Jetta-id14181867.html`);
+    assert.equal(jetta.key, 'STK:1V4690');
+  });
+
+  check('demos keep the dealership\'s own stock number', async () => {
+    const demo = d2cRun.inventory.vehicles.find((vehicle) => vehicle.vin === '3VWEW7BU2VM004050');
+    assert.ok(demo, 'the demo should be listed');
+    assert.equal(demo.stock, 'JG4050', 'the "-DEMO" suffix must not reach the sticker or the print history');
+    assert.equal(demo.key, 'STK:JG4050');
+    assert.equal(demo.demo, true);
+  });
+
+  check('trims are written the way they appear on the car', async () => {
+    const { formatTrim } = await import('./lib/d2c.mjs');
+    assert.equal(formatTrim('Se Awd'), 'SE AWD');
+    assert.equal(formatTrim('2.0t 6sp'), '2.0T 6sp');
+    assert.equal(formatTrim('Preferred Awd 2.4l'), 'Preferred AWD 2.4L');
+    assert.equal(formatTrim('Comfortline 2.0 Tsi 4motion'), 'Comfortline 2.0 TSI 4MOTION');
+    assert.equal(formatTrim('Gl V6 Awd At'), 'GL V6 AWD AT');
+    assert.equal(formatTrim('Highline R-Line'), 'Highline R-Line');
+    const glc = d2cRun.inventory.vehicles.find((vehicle) => vehicle.stock === '1D508Z');
+    assert.equal(glc.trim, '4MATIC Coupe');
+  });
+
+  check('says so when the listing comes up short', async () => {
+    d2cState.missing = ['/used/Mercedes_Benz.html'];
+    const run = await scrape.runScrape({ url: `${d2cBase}/used/search.html`, baseline: true, log: quiet });
+    d2cState.missing = [];
+    assert.equal(run.inventory.counts.printable, D2C_FLEET.length - 1);
+    assert.ok(run.inventory.apiWarning, 'a vehicle that could not be read should be reported, not hidden');
+  });
+
+  check('a read broken by a site change does not replace the last good list', async () => {
+    // The shape of the 29 Sep 2026 run: every car found, none with a link to put in a QR code.
+    const inventoryBefore = fs.readFileSync(scrape.PATHS.inventory, 'utf8');
+    const stateBefore = fs.readFileSync(scrape.PATHS.state, 'utf8');
+    d2cState.broken = true;
+    try {
+      await assert.rejects(
+        scrape.runScrape({ url: `${d2cBase}/used/search.html`, log: quiet }),
+        /website has probably changed/
+      );
+    } finally {
+      d2cState.broken = false;
+    }
+    assert.equal(fs.readFileSync(scrape.PATHS.inventory, 'utf8'), inventoryBefore, 'the published list must be left as it was');
+    assert.equal(fs.readFileSync(scrape.PATHS.state, 'utf8'), stateBefore, 'no vehicle should be marked as gone');
+  });
+
+  check('the paste fallback reads the new page source', async () => {
+    const { extractVehicles } = await import('./lib/extract.mjs');
+    const html = d2cPage(D2C_FLEET.slice(0, D2C_FIRST_PAGE), d2cState, true);
+    const { vehicles } = extractVehicles(html, `${d2cBase}/used/search.html`);
+    assert.equal(vehicles.length, D2C_FIRST_PAGE);
+    assert.ok(vehicles.every((vehicle) => /^[A-Z0-9]{6}$/.test(vehicle.stock)),
+      'stock numbers should be the dealership\'s, never the site\'s listing id: ' + vehicles.map((v) => v.stock).join(','));
+  });
+
+  check('the listing reader can run in the browser (no Node-only imports)', async () => {
+    for (const file of ['d2c.mjs', 'extract.mjs', 'html.mjs', 'vehicles.mjs']) {
+      const source = fs.readFileSync(path.join(scrape.ROOT, 'tools', 'lib', file), 'utf8');
+      assert.ok(!/from\s+['"]node:|require\(/.test(source), `${file} imports something the browser does not have`);
+    }
+  });
+
   // ---- the label page itself ----
   // These two mistakes both shipped and both broke printing, so they are worth
   // a guard even though this file cannot open a browser.
@@ -454,6 +653,7 @@ async function main() {
 
   server.close();
   convServer.close();
+  d2cServer.close();
   fs.rmSync(scratch, { recursive: true, force: true });
   console.log(`\n${passed}/${checks.length} checks passed`);
   process.exitCode = passed === checks.length ? 0 : 1;

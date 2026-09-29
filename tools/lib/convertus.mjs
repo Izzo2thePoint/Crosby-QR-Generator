@@ -183,13 +183,21 @@ export async function fetchInventory(listingUrl, options = {}) {
   let filtersFrom = listingUrl;
   let settingsFrom = 'page';
 
-  try {
-    const { html, finalUrl } = await fetchHtml(listingUrl, { timeoutMs });
-    gv = readGlobalVars(html);
-    if (gv) filtersFrom = finalUrl;
+  // The caller may already have fetched the page ({ html, finalUrl }), or tried
+  // and been refused (null) - either way, do not ask again.
+  let page = options.page;
+  if (page === undefined) {
+    try {
+      page = await fetchHtml(listingUrl, { timeoutMs });
+    } catch (error) {
+      page = null;
+      log(`  the page could not be read (${error.message})`);
+    }
+  }
+  if (page) {
+    gv = readGlobalVars(page.html);
+    if (gv) filtersFrom = page.finalUrl;
     else log('  the page carries no inventory settings');
-  } catch (error) {
-    log(`  the page could not be read (${error.message})`);
   }
 
   if (!gv && remembered && remembered.vmsApiUrl && remembered.inventoryId) {

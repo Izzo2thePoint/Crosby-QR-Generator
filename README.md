@@ -72,31 +72,41 @@ If the label sits too high or low for your stock, adjust *Move the label down th
 
 ## How it reads the inventory
 
-The inventory page on crosbyvw.com is drawn in the browser: the HTML that arrives from the
-server contains the page furniture and none of the vehicles. So instead of reading the page,
-this asks the same place the website's own vehicle grid asks — the inventory system behind
-`crosbyvw.com`, through the site's own request path.
+The dealership site runs on D2C Media (it moved there from Convertus at the end of September
+2026). Its used-vehicle page, `crosbyvw.com/used/search.html`, arrives from the server with the
+vehicles already in it: each one is a card holding the stock number, VIN, year, make, model,
+trim, kilometres, price and the link to its page. Nothing is guessed from the look of the page.
 
-That means each vehicle arrives as a proper record: stock number, VIN, year, make, model, trim,
-odometer and the link to its page. Nothing is guessed from markup.
+The search page only includes the first 36 results and loads the rest in the browser. Under
+the results it lists how many vehicles each make has, and each make has its own page that shows
+all of them (`/used/Hyundai.html`, `/demos/Volkswagen.html`...). So the check reads the search
+page, then reads the page for any make that came up short, and confirms the total matches the
+site's own counts. If even one vehicle is missing, the page says so rather than quietly showing
+a short list.
 
-The inventory system answers 30 vehicles at a time and ignores paging requests, so when the
-lot is larger the request is split along a facet it does report (make, then body style, year,
-colour) and the pieces are merged. The total is checked against the count the site itself
-reports — if even one vehicle is missing, the page says so rather than quietly showing a short
-list. If the inventory system is ever unreachable, it falls back to reading the page.
+Two quirks of the new site are handled:
+
+- **Demo stock numbers** carry a suffix on the site (`JG4050-DEMO`). The label shows, and the
+  print history keys on, the dealership's own number (`JG4050`).
+- **Trims** are shown with every word capitalised the same way ("Se Awd", "2.0t 6sp"). They are
+  printed the way they're written on a car ("SE AWD", "2.0T 6sp").
+
+If a read ever comes back broken, for example because the site changed again and the
+cars arrive without the links the QR codes need, the check **refuses to publish it**. The last
+good list stays on the page, nothing is marked as sold, and the run shows as failed on the
+Actions tab so someone notices.
 
 ### When the automatic check can't reach the site
 
 The page tells you when its list is stale, and the **Paste from website** tab is the backup:
 
-1. Click **Open the live vehicle list** in that tab.
-2. **Ctrl + A**, then **Ctrl + C** on the page of text that appears.
+1. Click **Open the inventory page** in that tab.
+2. Press **Ctrl + U** to see the page source, then **Ctrl + A** and **Ctrl + C**.
 3. Paste into the box → **Read vehicles from this page**.
 
 It reads what you pasted with the same logic as the automatic check, entirely inside your
-browser, and the vehicles land in the queue as normal. (It accepts a saved web page too, for
-other sites.)
+browser, and the vehicles land in the queue as normal. The search page holds the first 36
+vehicles; for the rest, do the same on a make's page (the links under the results).
 
 If the automatic check starts coming up empty, run **Actions → Diagnose inventory page** and
 send the output along — it reports exactly what the site is serving.
@@ -107,22 +117,21 @@ send the output along — it reports exactly what the site is serving.
 
 ```json
 {
-  "listingUrl": "https://www.crosbyvw.com/vehicles/?sc=used&in_transit=true&in_stock=true&on_order=true&view=grid",
+  "listingUrl": "https://www.crosbyvw.com/used/search.html",
   "qrTracking": { "utm_source": "window_sticker", "utm_medium": "qr", "utm_campaign": "used_inventory" }
 }
 ```
 
-- `listingUrl` — the inventory page it reads, and the filters it inherits. Drop
-  `in_transit=true` to only get vehicles physically on the lot, or paste any filtered inventory
-  URL from the website — the same filters are passed to the inventory system.
-- `useInventoryApi` — set to `false` to force reading the page instead of the inventory
-  system. Only useful for troubleshooting.
+- `listingUrl` — the used-vehicle page it reads (used and demo vehicles together, as on the
+  website).
 - `qrTracking` — parameters added to each QR link. `{}` for clean links.
 - `requestDelayMs` / `maxPages` — how gently it walks the site. The defaults are polite.
 
-**How often it checks:** every two hours between 8am and 6pm Kitchener time. Change the `cron`
-line in `.github/workflows/inventory.yml` (it's in UTC — add 4 hours to Eastern in summer, 5 in
-winter).
+**How often it checks:** hourly, at 37 minutes past, between 8am and 7pm Kitchener time.
+GitHub runs scheduled jobs on a shared queue and skips or delays some, so expect updates every
+hour or two rather than on the dot; **Actions → Refresh inventory → Run workflow** refreshes on
+demand. Change the `cron` line in `.github/workflows/inventory.yml` (it's in UTC — add 4 hours to
+Eastern in summer, 5 in winter).
 
 ---
 
@@ -156,9 +165,10 @@ If a vehicle sells before you print it, it drops off the queue and the page says
 node tools/selftest.mjs
 ```
 
-Stands up a pretend dealer website — including a stand-in for the inventory system that
-truncates its answers the way the real one does — and walks the whole cycle: read → new arrival
-→ print → marked printed → vehicle sold. It also runs automatically on every pull request
+Stands up pretend dealer websites — including a copy of the current site that shows only the
+first page of results, the way the real one does — and walks the whole cycle: read → new
+arrival → print → marked printed → vehicle sold. It also replays the day the site changed
+platforms, to prove a broken read is refused rather than published. It also runs automatically on every pull request
 (**Actions → Self-test**), so you don't need Node to see the result.
 
 ---
@@ -171,7 +181,8 @@ truncates its answers the way the real one does — and walks the whole cycle: r
 | `.github/workflows/inventory.yml` | The scheduled check and publish |
 | `config.json` | Settings |
 | `tools/scrape.mjs` | Reads the inventory, decides what's new |
-| `tools/lib/convertus.mjs` | Talks to the inventory system behind the website |
+| `tools/lib/d2c.mjs` | Reads the website's used-vehicle listing |
+| `tools/lib/convertus.mjs` | Reads the site's previous platform (kept in case it is ever needed again) |
 | `tools/diagnose.mjs` | Reports what the site is serving, when something breaks |
 | `tools/serve.mjs` | Local-PC mode only: runs the app, records what was printed |
 | `tools/lib/` | Page reading, vehicle matching, print history |

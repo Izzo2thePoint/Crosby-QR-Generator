@@ -4,6 +4,7 @@
 
 import { anchors, decodeEntities, scriptBlocks, stripTags } from './html.mjs';
 import { mergeVehicle, normalizeVehicle, vehicleKey } from './vehicles.mjs';
+import { isD2cListing, readD2cCards } from './d2c.mjs';
 
 const VEHICLE_TYPES = new Set(['vehicle', 'car', 'motorcycle', 'product', 'individualproduct', 'offer']);
 
@@ -180,6 +181,13 @@ export function extractFromDom(html, baseUrl) {
 
 /** Runs every strategy and merges the results by stock/VIN/URL. */
 export function extractVehicles(html, baseUrl) {
+  // A D2C Media listing carries complete cards. Its JSON-LD calls the site's own
+  // listing id a "sku", which the generic readers would take for a stock number.
+  if (isD2cListing(html)) {
+    const vehicles = readD2cCards(html, baseUrl);
+    return { vehicles, strategies: [{ name: 'd2c-cards', count: vehicles.length }] };
+  }
+
   const merged = new Map();
   const strategies = [];
   const runners = [
