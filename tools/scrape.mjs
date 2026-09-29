@@ -6,6 +6,7 @@
 //   node tools/scrape.mjs --dump          also save raw HTML to data/debug/
 //   node tools/scrape.mjs --baseline      treat everything found as already handled
 //   node tools/scrape.mjs --url="..."     scrape a different listing URL once
+//   node tools/scrape.mjs --force         publish the result even if it looks like a broken read
 
 import fs from 'node:fs';
 import path from 'node:path';
@@ -16,6 +17,7 @@ import { extractVehicles, extractFromEmbeddedJson, extractFromJsonLd, findMaxPag
 import { mergeVehicle, isPrintable, vehicleKey } from './lib/vehicles.mjs';
 import { loadState, reconcile, saveState } from './lib/state.mjs';
 import { fetchInventory } from './lib/convertus.mjs';
+import { collectD2cInventory, isD2cListing } from './lib/d2c.mjs';
 import { stripTags } from './lib/html.mjs';
 
 export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -36,7 +38,7 @@ export const PATHS = {
 
 const DEFAULT_CONFIG = {
   dealerName: 'Crosby Volkswagen',
-  listingUrl: 'https://www.crosbyvw.com/vehicles/?sc=used&in_transit=true&in_stock=true&on_order=true&view=grid',
+  listingUrl: 'https://www.crosbyvw.com/used/search.html',
   maxPages: 25,
   requestDelayMs: 700,
   requestTimeoutMs: 25000,
@@ -134,16 +136,53 @@ export async function runScrape(options = {}) {
   let apiUrl = '';
   let apiWarning = null;
 
-  // Preferred route: ask the system the website's own vehicle grid asks. The
-  // listing page itself is rendered in the browser and carries no vehicles.
-  if (config.useInventoryApi !== false) {
+  // Which platform is the site on? Since late September 2026 it is D2C Media,
+  // whose listing pages carry complete vehicle cards.
+  const remembered = readJson(PATHS.siteConfig, null) || config.inventorySystem || null;
+  let firstPage = null;
+  try {
+    firstPage = await fetchHtml(listingUrl, { timeoutMs: config.requestTimeoutMs });
+  } catch (error) {
+    // Nothing else to try on this platform; the old one could still be asked directly.
+    if (!remembered) throw error;
+    log(`  the listing page could not be read (${error.message})`);
+  }
+
+  if (firstPage && isD2cListing(firstPage.html)) {
+    log('Reading the used vehicle listing...');
+    if (dump) saveDebug('listing-page-1.html', firstPage.html);
+    firstPageHtml = firstPage.html;
+    const d2c = await collectD2cInventory(firstPage, {
+      fetchPage: (url) => fetchHtml(url, { timeoutMs: config.requestTimeoutMs }),
+      log,
+      delayMs: config.requestDelayMs,
+      sleep
+    });
+    source = 'd2c-listing';
+    apiTotal = d2c.claimedTotal;
+    pagesFetched.push(...d2c.pages);
+    for (const vehicle of d2c.vehicles) collected.set(vehicle.key, vehicle);
+    log(`Read ${d2c.vehicles.length} vehicle(s) from ${d2c.pages.length} page(s)`);
+    if (d2c.complete === false) {
+      apiWarning = `Only ${d2c.vehicles.length} of the ${d2c.claimedTotal} vehicles the site lists could be collected`;
+      log(`  ! ${apiWarning}`);
+    } else if (d2c.complete === null) {
+      apiWarning = 'The site no longer shows its stock counts, so the total could not be checked';
+      log(`  ! ${apiWarning}`);
+    }
+  }
+
+  // The site's previous platform (Convertus): ask the system its vehicle grid
+  // asked. That listing page was rendered in the browser and carried no vehicles.
+  if (source === 'page' && config.useInventoryApi !== false) {
     try {
       log('Reading the inventory the website\'s vehicle grid uses...');
       const api = await fetchInventory(listingUrl, {
         log,
         delayMs: config.requestDelayMs,
         timeoutMs: config.requestTimeoutMs,
-        remembered: readJson(PATHS.siteConfig, null) || config.inventorySystem || null
+        remembered,
+        page: firstPage
       });
       // Keep the settings for next time: the site sometimes refuses the page,
       // and these are all the inventory system needs.
@@ -236,6 +275,31 @@ export async function runScrape(options = {}) {
   vehicles = [...byKey.values()].sort((a, b) => (b.year || '').localeCompare(a.year || '') || a.title.localeCompare(b.title));
 
   const printable = vehicles.filter(isPrintable);
+
+  if (!vehicles.length && firstPageHtml) {
+    const file = saveDebug('listing-page-1.html', firstPageHtml);
+    log('');
+    log('No vehicles could be read from the listing page.');
+    log(`A copy of the page was saved to ${file} - send that file along if the parser needs tuning.`);
+  }
+
+  // A read the website has changed out from under us must not replace the last
+  // good list: the label page would go blank, and every car would be marked as
+  // gone. Refuse it, keep what was published, and let the run fail visibly.
+  if (!options.force) {
+    const previous = readJson(PATHS.inventory, null);
+    const lastGood = previous && previous.counts ? Number(previous.counts.printable) || 0 : 0;
+    const unusable = vehicles.length - printable.length;
+    if (unusable > printable.length) {
+      throw new Error(`Read ${vehicles.length} vehicle(s) but ${unusable} are missing the details a label needs - ` +
+        'the website has probably changed. The last good list has been kept.');
+    }
+    if (!printable.length && lastGood >= 5) {
+      throw new Error(`No vehicles could be read, where the last good read found ${lastGood} - ` +
+        'the website has probably changed. The last good list has been kept.');
+    }
+  }
+
   const state = loadState(PATHS.state);
   const result = reconcile(state, printable, { baseline: options.baseline });
   saveState(PATHS.state, result.state);
@@ -277,13 +341,6 @@ export async function runScrape(options = {}) {
   };
   writeJson(PATHS.inventory, inventory);
 
-  if (!vehicles.length && firstPageHtml) {
-    const file = saveDebug('listing-page-1.html', firstPageHtml);
-    log('');
-    log('No vehicles could be read from the listing page.');
-    log(`A copy of the page was saved to ${file} - send that file along if the parser needs tuning.`);
-  }
-
   return { inventory, state: result.state, reconcile: result, config };
 }
 
@@ -293,6 +350,7 @@ function parseArgs(argv) {
     if (arg === '--dump') options.dump = true;
     else if (arg === '--baseline') options.baseline = true;
     else if (arg === '--json') options.json = true;
+    else if (arg === '--force') options.force = true;
     else if (arg.startsWith('--url=')) options.url = arg.slice('--url='.length);
   }
   return options;
@@ -308,7 +366,9 @@ if (invokedDirectly) {
         return;
       }
       console.log('');
-      console.log(`Read via                 : ${inventory.source === 'inventory-api' ? 'the website\'s inventory system' : 'reading the listing page'}`);
+      const via = { 'd2c-listing': 'the website\'s vehicle listing', 'inventory-api': 'the website\'s inventory system' };
+      console.log(`Read via                 : ${via[inventory.source] || 'reading the listing page'}`);
+      if (inventory.apiTotal !== null && inventory.apiTotal !== undefined) console.log(`Vehicles the site lists  : ${inventory.apiTotal}`);
       console.log(`Vehicles on the used lot : ${inventory.counts.printable}`);
       if (inventory.apiWarning) console.log(`! ${inventory.apiWarning}`);
       if (inventory.counts.incomplete) console.log(`Skipped (missing details): ${inventory.counts.incomplete}`);

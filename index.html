@@ -213,9 +213,10 @@
 
         <div id="view-import" class="card pad" style="display:none">
           <p style="margin-top:0;color:var(--muted);font-size:14px;line-height:1.55">
-            Backup route, for when the automatic check can't reach the website. Open the inventory link below,
-            press <strong>Ctrl&nbsp;+&nbsp;A</strong> then <strong>Ctrl&nbsp;+&nbsp;C</strong> on the page of text
-            that appears, and paste it in. Nothing leaves this browser.
+            Backup route, for when the automatic check can't reach the website. Open the inventory page below,
+            press <strong>Ctrl&nbsp;+&nbsp;U</strong> to see its source, then <strong>Ctrl&nbsp;+&nbsp;A</strong> and
+            <strong>Ctrl&nbsp;+&nbsp;C</strong>, and paste it in. That page holds the first 36 vehicles; for the rest,
+            do the same on a make's page (the links under the results). Nothing leaves this browser.
           </p>
           <p style="font-size:13px;margin:0 0 10px">
             <a id="apiLink" href="#" target="_blank" rel="noopener" style="display:none">Open the live vehicle list &rarr;</a>
@@ -244,7 +245,7 @@
             <div><label class="f">Stock number</label><input type="text" id="mStock" value="JG0119" oninput="renderPreview()"></div>
           </div>
           <div style="margin-top:10px"><label class="f">Link for the QR code</label>
-            <input type="url" id="mUrl" value="https://www.crosbyvw.com/vehicles/" oninput="renderPreview()"></div>
+            <input type="url" id="mUrl" value="https://www.crosbyvw.com/used/search.html" oninput="renderPreview()"></div>
           <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap">
             <button class="btn-print" onclick="printManual()">Print this label</button>
             <button class="btn-ghost" onclick="downloadManual()">Download PNG</button>
@@ -552,7 +553,7 @@ async function afterStateLoad() {
   // the local helper reads the page directly, so it has nothing to offer there.
   $('tab-import').style.display = MODE === 'static' ? '' : 'none';
   $('clearHistoryBtn').style.display = MODE === 'static' ? '' : 'none';
-  $('listingLink').href = APP.listingUrl || 'https://www.crosbyvw.com/vehicles/';
+  $('listingLink').href = APP.listingUrl || 'https://www.crosbyvw.com/used/search.html';
   if (APP.apiUrl) {
     $('apiLink').href = APP.apiUrl;
     $('apiLink').style.display = '';
@@ -1129,7 +1130,7 @@ async function importFromSource() {
   if (html.length < 200) { toast('Paste the page source into the box first', true); return; }
   $('importResult').textContent = 'Reading the page...';
 
-  const base = APP.listingUrl || 'https://www.crosbyvw.com/vehicles/';
+  const base = APP.listingUrl || 'https://www.crosbyvw.com/used/search.html';
   let found = [];
 
   // The inventory link gives JSON; a saved web page gives HTML. Accept either.
