@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-10-30T18:10:14.062Z",
+  "fetchedAt": "2026-10-30T22:36:36.087Z",
   "listingUrl": "https://www.crosbyvw.com/used/search.html",
   "pagesFetched": [
     "https://www.crosbyvw.com/used/search.html"
@@ -23,7 +23,7 @@
     "found": 32,
     "printable": 32,
     "incomplete": 0,
-    "newThisRun": 2
+    "newThisRun": 0
   },
   "vehicles": [
     {
@@ -93,7 +93,7 @@
       "url": "https://www.crosbyvw.com/demos/2027-Volkswagen-Taos-id14313193.html",
       "price": "42422",
       "odometer": "90",
-      "image": "https://imagescdn.d2cmedia.ca/mb146e3afbb21fd12d575d56555d1f7963/5964/14313193/1/Volkswagen-Taos-2027.jpg",
+      "image": "https://imagescdn.d2cmedia.ca/mb6a2d9c549dc9e0c45daddd4228234e71/5964/14313193/1/Volkswagen-Taos-2027.jpg",
       "condition": "new",
       "demo": true,
       "siteId": "14313193",
@@ -169,7 +169,7 @@
       "url": "https://www.crosbyvw.com/used/2026-Volkswagen-Tiguan-id14594861.html",
       "price": "40995",
       "odometer": "3285",
-      "image": "https://imagescdn.d2cmedia.ca/mb9d55a3ba97de78e64fa34ba2d38fa04e/5964/14594861/1/Volkswagen-Tiguan-2026.jpg",
+      "image": "https://imagescdn.d2cmedia.ca/mb8a76d02f8c0e85ed027f4c9eef46bc22/5964/14594861/1/Volkswagen-Tiguan-2026.jpg",
       "condition": "new",
       "demo": false,
       "siteId": "14594861",
@@ -302,7 +302,7 @@
       "url": "https://www.crosbyvw.com/used/2023-GMC-Sierra_1500-id14499796.html",
       "price": "56895",
       "odometer": "51182",
-      "image": "https://imagescdn.d2cmedia.ca/mbc34940fe0c5277959645f3def3b38d49/5964/14499796/1/GMC-Sierra 1500-2023.jpg",
+      "image": "https://imagescdn.d2cmedia.ca/mb2dcac5f7d98d3d64702b962f21fb66a0/5964/14499796/1/GMC-Sierra 1500-2023.jpg",
       "condition": "used",
       "demo": false,
       "siteId": "14499796",
@@ -397,7 +397,7 @@
       "url": "https://www.crosbyvw.com/used/2022-Volkswagen-Tiguan-id14553863.html",
       "price": "26495",
       "odometer": "85834",
-      "image": "https://imagescdn.d2cmedia.ca/mb10ddac5e0f02d40fe1e13a65ac7b1d16/5964/14553863/1/Volkswagen-Tiguan-2022.jpg",
+      "image": "https://imagescdn.d2cmedia.ca/mbe923c01125b4bcbd1ec435db8da39795/5964/14553863/1/Volkswagen-Tiguan-2022.jpg",
       "condition": "used",
       "demo": false,
       "siteId": "14553863",
@@ -568,7 +568,7 @@
       "url": "https://www.crosbyvw.com/used/2019-MINI-Cooper_Hardtop-id14583553.html",
       "price": "11495",
       "odometer": "182740",
-      "image": "https://imagescdn.d2cmedia.ca/mb845e54a6e7443e4b6cdc49cb3945b6ae/5964/14583553/1/MINI-5 Door-2019.jpg",
+      "image": "https://imagescdn.d2cmedia.ca/mbe08f55aae8176139d7fb169e33d9376d/5964/14583553/1/MINI-5 Door-2019.jpg",
       "condition": "used",
       "demo": false,
       "siteId": "14583553",
@@ -606,7 +606,7 @@
       "url": "https://www.crosbyvw.com/used/2018-Mercedes_Benz-GLE_400-id14583554.html",
       "price": "22495",
       "odometer": "131571",
-      "image": "https://imagescdn.d2cmedia.ca/mb9421adaf854847e2ffb52953caff8193/5964/14583554/1/Mercedes_Benz-GLE-2018.jpg",
+      "image": "https://imagescdn.d2cmedia.ca/mb72ee5fb7cb9e8915970c11980cb0d19c/5964/14583554/1/Mercedes_Benz-GLE-2018.jpg",
       "condition": "used",
       "demo": false,
       "siteId": "14583554",
