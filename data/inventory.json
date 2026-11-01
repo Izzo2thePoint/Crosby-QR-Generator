@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-11-01T18:03:40.435Z",
+  "fetchedAt": "2026-11-01T22:17:33.475Z",
   "listingUrl": "https://www.crosbyvw.com/used/search.html",
   "pagesFetched": [
     "https://www.crosbyvw.com/used/search.html"
@@ -93,7 +93,7 @@
       "url": "https://www.crosbyvw.com/demos/2027-Volkswagen-Taos-id14313193.html",
       "price": "42422",
       "odometer": "90",
-      "image": "https://imagescdn.d2cmedia.ca/mb57471197de01f625aaec51642e8c7401/5964/14313193/1/Volkswagen-Taos-2027.jpg",
+      "image": "https://imagescdn.d2cmedia.ca/mb03fc3f5e23ecc1362ed5c783f3404dc9/5964/14313193/1/Volkswagen-Taos-2027.jpg",
       "condition": "new",
       "demo": true,
       "siteId": "14313193",
@@ -207,7 +207,7 @@
       "url": "https://www.crosbyvw.com/used/2025-Volkswagen-Atlas-id14465889.html",
       "price": "45295",
       "odometer": "60586",
-      "image": "https://imagescdn.d2cmedia.ca/mb12a2230fe9d4bc673736d84a5601bad3/5964/14465889/1/Volkswagen-Atlas-2025.jpg",
+      "image": "https://imagescdn.d2cmedia.ca/mbf9b8365924ec3fe1ab95b9d30ce5cdb9/5964/14465889/1/Volkswagen-Atlas-2025.jpg",
       "condition": "new",
       "demo": false,
       "siteId": "14465889",
@@ -568,7 +568,7 @@
       "url": "https://www.crosbyvw.com/used/2019-MINI-Cooper_Hardtop-id14583553.html",
       "price": "11495",
       "odometer": "182740",
-      "image": "https://imagescdn.d2cmedia.ca/mb1b3ed2a99e1c53fb1bc080493fbce1cb/5964/14583553/1/MINI-5 Door-2019.jpg",
+      "image": "https://imagescdn.d2cmedia.ca/mb619e5223ffe44807b76442ae52b77aef/5964/14583553/1/MINI-5 Door-2019.jpg",
       "condition": "used",
       "demo": false,
       "siteId": "14583553",
