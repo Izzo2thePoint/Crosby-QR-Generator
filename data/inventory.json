@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-11-06T19:38:59.855Z",
+  "fetchedAt": "2026-11-07T00:15:31.462Z",
   "listingUrl": "https://www.crosbyvw.com/used/search.html",
   "pagesFetched": [
     "https://www.crosbyvw.com/used/search.html"
@@ -23,7 +23,7 @@
     "found": 33,
     "printable": 33,
     "incomplete": 0,
-    "newThisRun": 5
+    "newThisRun": 0
   },
   "vehicles": [
     {
@@ -169,7 +169,7 @@
       "url": "https://www.crosbyvw.com/used/2026-Volkswagen-Tiguan-id14626877.html",
       "price": "",
       "odometer": "21369",
-      "image": "https://imagescdn.d2cmedia.ca/mb6b2153753bf33cc00b4ddbcecd4aa35c/5964/14626877/1/Volkswagen-Tiguan-2026.jpg",
+      "image": "https://imagescdn.d2cmedia.ca/mbd760cf9922cc61ce2100a0fd338f56c2/5964/14626877/1/Volkswagen-Tiguan-2026.jpg",
       "condition": "new",
       "demo": false,
       "siteId": "14626877",
@@ -397,7 +397,7 @@
       "url": "https://www.crosbyvw.com/used/2021-Audi-Q3-id14626873.html",
       "price": "",
       "odometer": "86200",
-      "image": "https://imagescdn.d2cmedia.ca/mbb9ae222ebee6a82e036f6485eab75657/5964/14626873/1/Audi-Q3-2021.jpg",
+      "image": "https://imagescdn.d2cmedia.ca/mb80dc069b46a371609eaba6947cd41402/5964/14626873/1/Audi-Q3-2021.jpg",
       "condition": "used",
       "demo": false,
       "siteId": "14626873",
@@ -530,7 +530,7 @@
       "url": "https://www.crosbyvw.com/used/2019-GMC-Sierra_1500-id14626875.html",
       "price": "",
       "odometer": "123773",
-      "image": "https://imagescdn.d2cmedia.ca/mbef28949588d7c94aea184f33e9fa2216/5964/14626875/1/GMC-Sierra 1500-2019.jpg",
+      "image": "https://imagescdn.d2cmedia.ca/mb115cc750cfdd264349db9efe4a49b6b2/5964/14626875/1/GMC-Sierra 1500-2019.jpg",
       "condition": "used",
       "demo": false,
       "siteId": "14626875",
@@ -587,7 +587,7 @@
       "url": "https://www.crosbyvw.com/used/2019-MINI-Cooper_Hardtop-id14583553.html",
       "price": "",
       "odometer": "182740",
-      "image": "https://imagescdn.d2cmedia.ca/mbea982d0a6af2787379dd93b8afe9659a/5964/14583553/1/MINI-5 Door-2019.jpg",
+      "image": "https://imagescdn.d2cmedia.ca/mb2db74d9a2c9bfc8162ec8f5a61ce0432/5964/14583553/1/MINI-5 Door-2019.jpg",
       "condition": "used",
       "demo": false,
       "siteId": "14583553",
@@ -625,7 +625,7 @@
       "url": "https://www.crosbyvw.com/used/2018-Volkswagen-Tiguan-id14626876.html",
       "price": "",
       "odometer": "186998",
-      "image": "https://imagescdn.d2cmedia.ca/mb0ad3a088cc54dbf55bf79017c3952e7c/5964/14626876/1/Volkswagen-Tiguan-2018.jpg",
+      "image": "https://imagescdn.d2cmedia.ca/mbfc7cc7d5bf8c80174b59e411da205fb6/5964/14626876/1/Volkswagen-Tiguan-2018.jpg",
       "condition": "used",
       "demo": false,
       "siteId": "14626876",
@@ -644,7 +644,7 @@
       "url": "https://www.crosbyvw.com/used/2017-Honda-CR_V-id14626874.html",
       "price": "",
       "odometer": "249824",
-      "image": "https://imagescdn.d2cmedia.ca/mbe2a99e59d0315b1b4b21777f83f7464a/5964/14626874/1/Honda-CR_V-2017.jpg",
+      "image": "https://imagescdn.d2cmedia.ca/mbad87fbaea13076afd0ea126efe5ba9de/5964/14626874/1/Honda-CR_V-2017.jpg",
       "condition": "used",
       "demo": false,
       "siteId": "14626874",
