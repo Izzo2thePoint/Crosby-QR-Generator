@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-11-17T21:16:06.071Z",
+  "fetchedAt": "2026-11-18T03:05:57.324Z",
   "listingUrl": "https://www.crosbyvw.com/used/search.html",
   "pagesFetched": [
     "https://www.crosbyvw.com/used/search.html"
@@ -112,7 +112,7 @@
       "url": "https://www.crosbyvw.com/used/2026-Audi-A3_SEDAN-id14654803.html",
       "price": "",
       "odometer": "38229",
-      "image": "https://imagescdn.d2cmedia.ca/mbec7772ffc4e3900e306ce08c32a6d86a/5964/14654803/1/Audi-A3 Sedan-2026.jpg",
+      "image": "https://imagescdn.d2cmedia.ca/mbb65fe14e1415c215f59d43299fed6033/5964/14654803/1/Audi-A3 Sedan-2026.jpg",
       "condition": "new",
       "demo": false,
       "siteId": "14654803",
@@ -169,7 +169,7 @@
       "url": "https://www.crosbyvw.com/used/2026-Volkswagen-Tiguan-id14626877.html",
       "price": "",
       "odometer": "21369",
-      "image": "https://imagescdn.d2cmedia.ca/mb18964031256e1d3bf30814c47c6bd837/5964/14626877/1/Volkswagen-Tiguan-2026.jpg",
+      "image": "https://imagescdn.d2cmedia.ca/mbfe4f550333d4a57987e90c680a430934/5964/14626877/1/Volkswagen-Tiguan-2026.jpg",
       "condition": "new",
       "demo": false,
       "siteId": "14626877",
@@ -492,7 +492,7 @@
       "url": "https://www.crosbyvw.com/used/2019-Mercedes_Benz-GLA_250-id14553862.html",
       "price": "",
       "odometer": "52586",
-      "image": "https://imagescdn.d2cmedia.ca/mbc7868ed9a0496f324b83fe43938427f2/5964/14553862/1/Mercedes_Benz-GLA-2019.jpg",
+      "image": "https://imagescdn.d2cmedia.ca/mb2be06d0c2ecaeafc6a68fa8b8de223bb/5964/14553862/1/Mercedes_Benz-GLA-2019.jpg",
       "condition": "used",
       "demo": false,
       "siteId": "14553862",
@@ -568,7 +568,7 @@
       "url": "https://www.crosbyvw.com/used/2017-Honda-CR_V-id14626874.html",
       "price": "",
       "odometer": "249824",
-      "image": "https://imagescdn.d2cmedia.ca/mb53253149cb2af62c0645103fc7e02b55/5964/14626874/1/Honda-CR_V-2017.jpg",
+      "image": "https://imagescdn.d2cmedia.ca/mbb32bd55dc969698d7128b118c2afe811/5964/14626874/1/Honda-CR_V-2017.jpg",
       "condition": "used",
       "demo": false,
       "siteId": "14626874",
